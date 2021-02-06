@@ -4,6 +4,13 @@
 /node_modules
 /.pnp
 .pnp.js
+.env
+env
+./env
+.gitignore
+.node_modules
+node_modules
+
 
 # testing
 /coverage
