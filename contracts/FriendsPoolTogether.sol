@@ -19,37 +19,56 @@ contract FriendsPoolTogether {
     
     struct Pool {
         uint poolID;
+        string name;
         address admin;
         uint tickets;
     }
     
-    
+    //Creates a pool
     function createPool() public {
        pools[nextId] = Pool(nextId, msg.sender, 0);
        nextId++;
     }
     
+    //Whitelist members for a pool
     function whitelist(uint _id, address memberTarget) public onlyAdmin(_id) {
         nextId++;
     }
     
-    function deposit() public {
+    //Deposit into a pool
+    function deposit(uint _id) public payable {
         nextId++;
     }
     
-    
-    function withdraw() public {
+    //Withdraw from a pool
+    function withdraw(uint _id) public {
         nextId++;
     }
     
+    //Internal function: Releases the prize after the timeperiod
+    function releasePrize() internal {
+        nextId++;
+    }
+
+    //Internal function: Deposits prize pool into Compound Finance, AAVE, or interest account
+    function depositIntoCompound() internal {
+        nextId++;
+    }
     
+    //Internal function: Gets a random number for the winner
     function getRandomNumber() internal {
         nextId++;
     }
-    
-    
+
+    //Can only be admin for pool modifier
     modifier onlyAdmin(uint _id) {
-        require(msg.sender == pools[_id].admin);
+        require(msg.sender == pools[_id].admin, 'Must be te admin for this pool!');
+        _;
+    }
+
+    //Can only be members for pool modifier
+    modifier onlyMember(uint _id) {
+        require(whitelisted[msg.sender][_id] == true, 'Must be a member!');
         _;
     }
     
