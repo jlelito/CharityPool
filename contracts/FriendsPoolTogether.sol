@@ -12,7 +12,10 @@ contract FriendsPoolTogether {
     event WhiteListed(uint _id, address member);
     event deposited(uint _id, uint depositAmount);
     event withdrawed(uint _id, uint withdrawAmount);
-    
+
+    constructor(address _admin) public {
+        admin = _admin;
+    }
     
     struct Pool {
         uint poolID;
