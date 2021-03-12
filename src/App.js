@@ -23,10 +23,10 @@ class App extends Component {
       await this.setState({web3})
       await this.loadAccountData()
     } else {
-      web3 = new Web3(new Web3.providers.HttpProvider(`https://ropsten.infura.io/v3/${process.env.INFURA_API_KEY}`))
+      web3 = new Web3(new Web3.providers.HttpProvider(`https://ropsten.infura.io/v3/${process.env.REACT_APP_INFURA_API_KEY}`))
       await this.setState({web3})
     }
-    await this.loadContractData()
+    this.loadContractData()
     this.setState({loading: false})
   }
 
@@ -41,13 +41,14 @@ class App extends Component {
     } else {
       await this.setState({account: null, isConnected: false})
     }
-
-    console.log('Getting network')
+  
     const networkId = await web3.eth.net.getId()
     this.setState({network: networkId})
-
+  
     if(this.state.network !== 3) {
       this.setState({wrongNetwork: true})
+      web3 = new Web3(new Web3.providers.HttpProvider(`https://ropsten.infura.io/v3/${process.env.REACT_APP_INFURA_API_KEY}`))
+      await this.setState({web3})
     }
   }
 
@@ -60,10 +61,10 @@ async loadContractData() {
     const abi = PoolTogetherData.abi
     const address = PoolTogetherData.address
     //Load contract and set state
-    const tokenContract = new this.state.web3.eth.Contract(abi, address)
-    await this.setState({ contract : tokenContract })
+    const poolContract = new this.state.web3.eth.Contract(abi, address)
+    await this.setState({ poolContract })
 
-    contractAdmin = await this.state.houseToken.methods.admin().call()
+    contractAdmin = await this.state.poolContract.methods.admin().call()
     this.setState({ admin: contractAdmin })
   }
 
@@ -73,17 +74,20 @@ constructor(props) {
   super(props)
   this.notificationOne = React.createRef()
   this.state = {
-    account: '0x0',
-    admin:'0x0',
-    contract: {},
-    loading: true,
-    currentDate: null,
+    web3: null,
+    account: null,
+    admin:null,
+    network: null,
+    wrongNetwork: false,
+    loading: false,
+    isConnected: null,
+    poolContract: {},
+    poolContractAddress: null,
     currentEthBalance: '0',
     hash: null,
     action: null,
-    showNotification: false,
-    notifyAmount:null,
-    notifyName:null
+    trxStatus: null,
+    confirmNum: 0
   }
 }
 
@@ -113,14 +117,26 @@ constructor(props) {
           balance={this.state.currentEthBalance}
         />
 
-        <Notification 
-            showNotification={this.state.showNotification}
-            action={this.state.action}
-            hash={this.state.hash}
-            ref={this.notificationOne}
-            amount={this.state.notifyAmount}
-            name={this.state.notifyName}
-        />
+        <div className='mt-5' />
+        {window.ethereum === null ?
+          <ConnectionBanner className='mt-5' currentNetwork={this.state.network} requiredNetwork={3} onWeb3Fallback={true} />
+          :
+          this.state.wrongNetwork ? <ConnectionBanner className='mt-5' currentNetwork={this.state.network} requiredNetwork={3} onWeb3Fallback={false} /> 
+          :
+          null
+        }
+        {this.state.loading ?
+        <Loading />
+        :
+        <>
+          <Notification 
+              showNotification={this.state.showNotification}
+              action={this.state.action}
+              hash={this.state.hash}
+              ref={this.notificationOne}
+              amount={this.state.notifyAmount}
+              name={this.state.notifyName}
+          />
 
           <h1>Hello!!!</h1>
           <h1>Account: {this.state.account}</h1>
@@ -133,6 +149,8 @@ constructor(props) {
           >
             Learn React
           </p>
+        </>
+        }
         
       </div>
     );
