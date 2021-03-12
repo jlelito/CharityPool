@@ -1,6 +1,9 @@
-pragma solidity ^0.6.0;
+pragma solidity ^0.5.12;
 
-contract FriendsPoolTogether {
+import './CompoundWallet.sol';
+
+
+contract FriendsPoolTogether is CompoundWallet {
     
     uint public nextId = 0;
     address public admin;
@@ -21,12 +24,11 @@ contract FriendsPoolTogether {
         uint poolID;
         string name;
         address payable admin;
-        uint tickets;
     }
     
     //Creates a pool
     function createPool(string memory  _name) public {
-       pools[nextId] = Pool(nextId, _name,  msg.sender, 0);
+       pools[nextId] = Pool(nextId, _name,  msg.sender);
        nextId++;
     }
     
@@ -43,15 +45,12 @@ contract FriendsPoolTogether {
     //Deposit into a pool
     function deposit(uint _id) public payable onlyMember(_id) {
         deposits[msg.sender][_id] += msg.value;
-        pools[_id].tickets += msg.value;
     }
     
     //Withdraw from a pool
     function withdraw(uint _id, uint amount) public onlyMember(_id) {
         deposits[msg.sender][_id] -= amount;
-        pools[_id].tickets -= amount;
-        address payable target = msg.sender;
-        target.transfer(amount);
+        address(msg.sender).transfer(amount);
     }
     
     //Internal function: Releases the prize after the timeperiod
@@ -59,10 +58,6 @@ contract FriendsPoolTogether {
         //Release prize to random winner
     }
 
-    //Internal function: Deposits prize pool into Compound Finance, AAVE, or interest account
-    function depositIntoCompound() internal {
-        //Deposit into interest account
-    }
     
     //Internal function: Gets a random number for the winner
     function getRandomNumber() internal {
