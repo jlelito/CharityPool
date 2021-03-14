@@ -27,6 +27,7 @@ class App extends Component {
       await this.setState({web3})
     }
     this.loadContractData()
+    this.loadPoolData()
     this.setState({loading: false})
   }
 
@@ -45,7 +46,7 @@ class App extends Component {
     const networkId = await web3.eth.net.getId()
     this.setState({network: networkId})
   
-    if(this.state.network !== 3) {
+    if(this.state.network !== 5777) {
       this.setState({wrongNetwork: true})
       web3 = new Web3(new Web3.providers.HttpProvider(`https://ropsten.infura.io/v3/${process.env.REACT_APP_INFURA_API_KEY}`))
       await this.setState({web3})
@@ -54,20 +55,68 @@ class App extends Component {
 
 // Load HouseToken Contract Data
 async loadContractData() {
-  let contractAdmin
-  let PoolTogetherData = FriendsPoolTogether.networks[5777]
+  
+  let contractAdmin, PoolTogetherData
+  PoolTogetherData = FriendsPoolTogether.networks[5777]
   if(PoolTogetherData) {
-    
-    const abi = PoolTogetherData.abi
+    const abi = FriendsPoolTogether.abi
     const address = PoolTogetherData.address
     //Load contract and set state
     const poolContract = new this.state.web3.eth.Contract(abi, address)
-    await this.setState({ poolContract })
-
+    await this.setState({ poolContract, poolContractAddress: address })
     contractAdmin = await this.state.poolContract.methods.admin().call()
     this.setState({ admin: contractAdmin })
   }
 
+}
+
+async loadPoolData() {
+  let length
+  const poolsList = []
+  length = await this.state.poolContract.methods.nextId().call()
+  for(let i=0; i < length; i++){
+    let currentPool = await this.state.poolContract.methods.pools(i).call()
+    poolsList.push(currentPool)
+  }
+  this.setState({poolsList})
+  console.log('Current Pool List:', poolsList)
+}
+
+//Creates Pools
+createPool = (name) => {
+
+  this.setState({confirmNum: 0})
+  try {
+    this.state.poolContract.methods.createPool(name).send({ from: this.state.account }).on('transactionHash', async (hash) => {
+      this.setState({hash: hash, action: 'Created Pool', trxStatus: 'Pending'})
+      this.showNotification()
+      await this.loadAccountData()
+      await this.loadPoolData()
+      
+    }).on('receipt', (receipt) => {
+        if(receipt.status === true){
+          this.setState({trxStatus: 'Success'})
+        }
+        else if(receipt.status === false){
+          this.setState({trxStatus: 'Failed'})
+        }
+    }).on('error', (error) => {
+        window.alert('Error! Could not create house!')
+    }).on('confirmation', (confirmNum) => {
+        if(confirmNum > 10) {
+          this.setState({confirmNum : '10+'})
+        } else{
+        this.setState({confirmNum})
+        }
+    })
+    } catch(e) {
+      window.alert(e)
+    }
+
+}
+
+showNotification = () => {
+  this.notificationOne.current.updateShowNotify()
 }
 
 constructor(props) {
@@ -83,6 +132,7 @@ constructor(props) {
     isConnected: null,
     poolContract: {},
     poolContractAddress: null,
+    poolsList: [],
     currentEthBalance: '0',
     hash: null,
     action: null,
@@ -111,10 +161,14 @@ constructor(props) {
     }
 
     return (
-      <div className="App">
+      <div className='App'>
         <Navbar 
           account={this.state.account}
+          currentBalance={this.state.houseTokenBalance}
           balance={this.state.currentEthBalance}
+          network={this.state.network}
+          isConnected={this.state.isConnected}
+          trxStatus={this.state.trxStatus}
         />
 
         <div className='mt-5' />
@@ -138,17 +192,55 @@ constructor(props) {
               name={this.state.notifyName}
           />
 
-          <h1>Hello!!!</h1>
-          <h1>Account: {this.state.account}</h1>
-          <h1>Admin: {this.state.admin}</h1>
-          <p>
-            Josh's Pool Together App.
-          </p>
-          <p
-            
-          >
-            Learn React
-          </p>
+          <h1>Pool Together App</h1>
+          <h3>Create Pool</h3>
+          <form className='col justify-content-center' onSubmit={() => {
+            console.log(this.poolName.value.toString())
+            let createPoolName = this.poolName.value.toString()
+            this.createPool(createPoolName)
+          }}>
+            <label>Pool Name</label>
+            <input
+              type='text'
+              ref={(poolName) => { this.poolName = poolName }}
+              className='form-control form-control-md'
+              placeholder='Pool Name'
+              required 
+            />
+            <button type='submit' className='btn btn-primary'>Create</button>
+          </form>
+          <div className='row'>
+            {this.state.poolsList.length === 0 ? <h1>No Pools Found!</h1> : 
+            <>
+            {this.state.poolsList.map(pool => (
+              <div className='col-sm-6'>
+                <div className='card'>
+                  <div className='card-body'>
+                    <h5 className='card-title'>Pool #: {pool.poolID} </h5>
+                    <div className='float-left'>
+                      <p className='card-text'>Pool Admin: {pool.admin}  </p>
+                      <p className='card-text'>Total Amount Deposited: {pool.amountDeposited}</p>
+                      <p className='card-text'>Prize Interest Amount: </p>
+                      <p className='card-text'>Next Prize Release Date: </p>
+                      <div className='row'>
+                      <form>
+                        <input></input>
+                        <button className='btn btn-primary'>Deposit</button>
+                      </form>
+                        <input></input>
+                        <button className='btn btn-primary'>Withdraw</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div className='card-footer'>
+                    <label>Amount Deposited: </label>
+                  </div>
+                </div>        
+              </div>    
+            ))}
+            </>
+            }
+          </div>
         </>
         }
         
