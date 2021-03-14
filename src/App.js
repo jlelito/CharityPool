@@ -214,21 +214,28 @@ constructor(props) {
             <>
             {this.state.poolsList.map(pool => (
               <div className='col-sm-6'>
-                <div className='card'>
+                <div className='card mt-4 mx-3'>
                   <div className='card-body'>
                     <h5 className='card-title'>Pool #: {pool.poolID} </h5>
+                    <h5 className='card-title'>{pool.name} </h5>
                     <div className='float-left'>
                       <p className='card-text'>Pool Admin: {pool.admin}  </p>
                       <p className='card-text'>Total Amount Deposited: {pool.amountDeposited}</p>
                       <p className='card-text'>Prize Interest Amount: </p>
                       <p className='card-text'>Next Prize Release Date: </p>
-                      <div className='row'>
+                      <div className='row justify-content-center'>
                       <form>
-                        <input></input>
-                        <button className='btn btn-primary'>Deposit</button>
+                        <input type='number' className='form-control mx-2' placeholder='0' min='.01' step='.01' required></input>
+                        <div className='row justify-content-center'>
+                          <button className='btn btn-primary'>Deposit</button>
+                        </div>
                       </form>
-                        <input></input>
-                        <button className='btn btn-primary'>Withdraw</button>
+                      <form>
+                        <input type='number' className='form-control mx-2' placeholder='0' min='.01' step='.01' required></input>
+                        <div className='row justify-content-center'>
+                          <button className='btn btn-primary'>Withdraw</button>
+                        </div>
+                      </form>
                       </div>
                     </div>
                   </div>
