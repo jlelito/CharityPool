@@ -5,7 +5,7 @@ import './CompoundWallet.sol';
 
 contract FriendsPoolTogether is CompoundWallet {
     
-    uint public nextId = 0;
+    uint public nextId = 1;
     address public admin;
     mapping(uint => Pool) public pools;
     mapping(address => mapping(uint => uint)) public deposits;
