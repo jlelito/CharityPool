@@ -13,6 +13,7 @@ contract FriendsPoolTogether is CompoundWallet {
     
     event PoolCreated(uint id, address admin);
     event whitelistedEvent(uint _id, address member);
+    event unWhitelistedEvent(uint _id, address member);
     event deposited(uint _id, uint depositAmount);
     event withdrawed(uint _id, uint withdrawAmount);
 
@@ -31,17 +32,21 @@ contract FriendsPoolTogether is CompoundWallet {
     function createPool(string memory  _name) public {
        pools[nextId] = Pool(nextId, _name,  msg.sender, 0);
        poolsWhitelist[msg.sender][nextId] = true;
+       emit PoolCreated(nextId, msg.sender);
        nextId++;
+       
     }
     
     //Whitelist member for a pool
     function whitelist(uint _id, address memberTarget) public onlyPoolAdmin(_id) {
         poolsWhitelist[memberTarget][_id] = true;
+        emit whitelistedEvent(_id, memberTarget);
     }
     
     //Unwhitelist member for a pool
     function unwhitelist(uint _id, address memberTarget) public onlyPoolAdmin(_id) {
         poolsWhitelist[memberTarget][_id] = false;
+        emit unWhitelistedEvent(_id, memberTarget);
     }
     
     //Deposit into a pool
@@ -49,6 +54,7 @@ contract FriendsPoolTogether is CompoundWallet {
         deposits[msg.sender][_id] += msg.value;
         pools[_id].amountDeposited += msg.value;
         supplyEthToCompound(compoundAddress);
+        emit deposited(_id, msg.value);
     }
     
     //Withdraw from a pool
@@ -58,6 +64,7 @@ contract FriendsPoolTogether is CompoundWallet {
         address(msg.sender).transfer(amount);
         deposits[msg.sender][_id] -= amount;
         pools[0].amountDeposited -= amount;
+        emit withdrawed(_id, amount);
         
     }
     
