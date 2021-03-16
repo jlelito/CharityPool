@@ -6,7 +6,7 @@ import Navbar from './components/Navbar.js';
 import Notification from './components/Notification.js';
 import Loading from './components/Loading.js';
 import ConnectionBanner from '@rimble/connection-banner';
-
+import cETH from './abis/cETHRopstenABI.json';
 
 class App extends Component {
 
@@ -26,8 +26,9 @@ class App extends Component {
       web3 = new Web3(new Web3.providers.HttpProvider(`https://ropsten.infura.io/v3/${process.env.REACT_APP_INFURA_API_KEY}`))
       await this.setState({web3})
     }
-    this.loadContractData()
-    this.loadPoolData()
+    await this.loadContractData()
+    await this.loadPoolData()
+    console.log('Pools:', this.state.poolsList)
     this.setState({loading: false})
   }
 
@@ -57,7 +58,7 @@ class App extends Component {
 async loadContractData() {
   
   let contractAdmin, PoolTogetherData
-  PoolTogetherData = FriendsPoolTogether.networks[5777]
+  PoolTogetherData = FriendsPoolTogether.networks[3]
   if(PoolTogetherData) {
     const abi = FriendsPoolTogether.abi
     const address = PoolTogetherData.address
@@ -67,6 +68,13 @@ async loadContractData() {
     contractAdmin = await this.state.poolContract.methods.admin().call()
     this.setState({ admin: contractAdmin })
   }
+  //Compound Ropsten address located here: https://compound.finance/docs#networks
+  const compoundCETHContractAddress = '0x859e9d8a4edadfedb5a2ff311243af80f85a91b8'
+  const cETHContract = new this.state.web3.eth.Contract(cETH, compoundCETHContractAddress)
+  await this.setState({cETHContract, cETHAddress: compoundCETHContractAddress})
+  let cETHBalance = await this.state.cETHContract.methods.balanceOf(this.state.poolContractAddress).call()
+  this.setState({contractCETHBalance: cETHBalance})
+
 
 }
 
@@ -74,26 +82,37 @@ async loadPoolData() {
   let length
   const poolsList = []
   length = await this.state.poolContract.methods.nextId().call()
-  for(let i=0; i < length; i++){
+  for(let i=1; i < length; i++){
     let currentPool = await this.state.poolContract.methods.pools(i).call()
     poolsList.push(currentPool)
   }
   this.setState({poolsList})
-  console.log('Current Pool List:', poolsList)
+
+  const depositedAmounts = []
+  for(let i=0; i < this.state.poolsList.length; i++){
+    let currentDeposit = await this.state.poolContract.methods.deposits(this.state.account, i).call()
+    depositedAmounts.push([i, currentDeposit])
+  }
+  this.setState({depositedAmounts})
 }
 
 //Creates Pools
-createPool = (name) => {
+async createPool(name) {
+  console.log('Creating pool...')
+  console.log('Pool Contract:', this.state.poolContract)
 
   this.setState({confirmNum: 0})
   try {
+    console.log('Pool being created..')
     this.state.poolContract.methods.createPool(name).send({ from: this.state.account }).on('transactionHash', async (hash) => {
       this.setState({hash: hash, action: 'Created Pool', trxStatus: 'Pending'})
       this.showNotification()
-      await this.loadAccountData()
-      await this.loadPoolData()
       
-    }).on('receipt', (receipt) => {
+    }).on('receipt', async (receipt)  => {
+        await this.loadAccountData()
+        await this.loadContractData()
+        await this.loadPoolData()
+
         if(receipt.status === true){
           this.setState({trxStatus: 'Success'})
         }
@@ -101,7 +120,7 @@ createPool = (name) => {
           this.setState({trxStatus: 'Failed'})
         }
     }).on('error', (error) => {
-        window.alert('Error! Could not create house!')
+        window.alert('Error! Could not create Pool! Error:', error)
     }).on('confirmation', (confirmNum) => {
         if(confirmNum > 10) {
           this.setState({confirmNum : '10+'})
@@ -113,6 +132,75 @@ createPool = (name) => {
       window.alert(e)
     }
 
+}
+
+//Supply ETH to Pool
+async poolDeposit(id, amount) {
+  console.log('Pool Contract:', this.state.poolContract)
+  amount = this.state.web3.utils.toHex(this.state.web3.utils.toWei(amount, 'ether'))
+  try {
+    this.state.poolContract.methods.deposit(id, this.state.cETHAddress).send({ from: this.state.account, value: amount}).on('transactionHash', async (hash) => {
+       this.setState({hash: hash, action: 'Deposited ETH to Pool', trxStatus: 'Pending'})
+       this.showNotification()
+
+      }).on('receipt', async (receipt) => {
+          await this.loadAccountData()
+          await this.loadContractData()
+          await this.loadPoolData()
+
+          if(receipt.status === true){
+            this.setState({trxStatus: 'Success'})
+          }
+          else if(receipt.status === false){
+            this.setState({trxStatus: 'Failed'})
+          }
+      }).on('error', (error) => {
+          window.alert('Error! Could not Supply ETH!')
+      }).on('confirmation', (confirmNum) => {
+          if(confirmNum > 10) {
+            this.setState({confirmNum : '10+'})
+          } else {
+          this.setState({confirmNum})
+          }
+      })
+    }
+    catch(e) {
+      window.alert(e)
+    }
+}
+
+//Withdraw ETH from Pool
+async poolWithdraw(id, amount) {
+  amount = this.state.web3.utils.toHex(this.state.web3.utils.toWei(amount, 'ether'))
+  try {
+    this.state.poolContract.methods.withdraw(id, amount, this.state.cETHAddress).send({ from: this.state.account }).on('transactionHash', async (hash) => {
+       this.setState({hash: hash, action: 'Redeemed ETH from Pool', trxStatus: 'Pending'})
+       this.showNotification()
+
+      }).on('receipt', async (receipt) => {
+          await this.loadAccountData()
+          await this.loadContractData()
+          await this.loadPoolData()
+
+          if(receipt.status === true){
+            this.setState({trxStatus: 'Success'})
+          }
+          else if(receipt.status === false){
+            this.setState({trxStatus: 'Failed'})
+          }
+      }).on('error', (error) => {
+          window.alert('Error! Could not Redeem ETH!')
+      }).on('confirmation', (confirmNum) => {
+          if(confirmNum > 10) {
+            this.setState({confirmNum : '10+'})
+          } else {
+          this.setState({confirmNum})
+          }
+      })
+    }
+    catch(e) {
+      window.alert(e)
+    }
 }
 
 showNotification = () => {
@@ -132,7 +220,9 @@ constructor(props) {
     isConnected: null,
     poolContract: {},
     poolContractAddress: null,
+    contractCETHBalance: null,
     poolsList: [],
+    depositedAmounts: null,
     currentEthBalance: '0',
     hash: null,
     action: null,
@@ -140,7 +230,6 @@ constructor(props) {
     confirmNum: 0
   }
 }
-
 
   render() {
 
@@ -191,27 +280,31 @@ constructor(props) {
               amount={this.state.notifyAmount}
               name={this.state.notifyName}
           />
-
-          <h1>Pool Together App</h1>
-          <h3>Create Pool</h3>
-          <form className='col justify-content-center' onSubmit={() => {
-            console.log(this.poolName.value.toString())
-            let createPoolName = this.poolName.value.toString()
-            this.createPool(createPoolName)
-          }}>
-            <label>Pool Name</label>
-            <input
-              type='text'
-              ref={(poolName) => { this.poolName = poolName }}
-              className='form-control form-control-md'
-              placeholder='Pool Name'
-              required 
-            />
-            <button type='submit' className='btn btn-primary'>Create</button>
-          </form>
-          <div className='row'>
-            {this.state.poolsList.length === 0 ? <h1>No Pools Found!</h1> : 
+          &nbsp;
+          <div className='mt-3'></div>
+          <h1 className='mt-1 mb-5'>Pool Together App</h1>
+          <h2>Create Pool</h2>
+          <div className='row justify-content-center'>
+            <form className='col-4' onSubmit={async (e) => {
+              e.preventDefault()
+              let createPoolName = this.poolName.value.toString()
+              console.log('Creating Pool:', createPoolName)
+              this.createPool(createPoolName)
+            }}>
+              <label>Pool Name</label>
+              <input
+                type='text'
+                ref={(poolName) => { this.poolName = poolName }}
+                className='form-control form-control-md'
+                placeholder='Pool Name'
+                required 
+              />
+              <button type='submit' className='btn btn-primary mt-2'>Create</button>
+            </form>
+          </div>
+          {this.state.poolsList.length === 0 ? <h1 className='my-5'>No Pools Found!</h1> : 
             <>
+            <div className='row'>
             {this.state.poolsList.map(pool => (
               <div className='col-sm-6'>
                 <div className='card mt-4 mx-3'>
@@ -224,31 +317,64 @@ constructor(props) {
                       <p className='card-text'>Prize Interest Amount: </p>
                       <p className='card-text'>Next Prize Release Date: </p>
                       <div className='row justify-content-center'>
-                      <form>
-                        <input type='number' className='form-control mx-2' placeholder='0' min='.01' step='.01' required></input>
+                      <form onSubmit={(e) => {
+                        let depositAmount
+                        e.preventDefault()
+                        depositAmount = this.depositInput.value.toString()
+                        this.poolDeposit(pool.poolID, depositAmount)
+                      }}>
+                        <input 
+                          type='number' 
+                          className='form-control mx-2' 
+                          placeholder='0' 
+                          min='.01' 
+                          step='.01'
+                          ref={(depositInput) => { this.depositInput = depositInput }}
+                          required 
+                        />
+
                         <div className='row justify-content-center'>
-                          <button className='btn btn-primary'>Deposit</button>
+                          <button className='btn btn-primary' type='submit'>Deposit</button>
                         </div>
                       </form>
-                      <form>
-                        <input type='number' className='form-control mx-2' placeholder='0' min='.01' step='.01' required></input>
+                      <form onSubmit={(e) => {
+                        let withdrawAmount
+                        e.preventDefault()
+                        withdrawAmount = this.withdrawInput.value.toString()
+                        this.poolWithdraw(pool.poolID, withdrawAmount)
+                      }}>
+                        <input 
+                          type='number' 
+                          className='form-control mx-2' 
+                          placeholder='0' 
+                          min='.01' 
+                          step='.01'
+                          ref={(withdrawInput) => { this.withdrawInput = withdrawInput }}
+                          required 
+                        />
                         <div className='row justify-content-center'>
-                          <button className='btn btn-primary'>Withdraw</button>
+                          <button className='btn btn-primary' type='submit'>Withdraw</button>
                         </div>
                       </form>
                       </div>
                     </div>
                   </div>
                   <div className='card-footer'>
-                    <label>Amount Deposited: </label>
+                    <label>Your Amount Deposited: {this.state.depositedAmounts[pool.poolID][1]} </label>
                   </div>
                 </div>        
               </div>    
             ))}
+            </div>
             </>
             }
+          
+          <div className='row justify-content-center mt-4'>
+            Pool Contract on Etherscan: 
+            <a className='ml-3' href={`https://ropsten.etherscan.io/address/${this.state.poolContractAddress}`} target='_blank'>Etherscan</a>
           </div>
         </>
+        
         }
         
       </div>
