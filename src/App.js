@@ -88,7 +88,7 @@ async loadPoolData() {
   }
   this.setState({poolsList})
 
-  const depositedAmounts = []
+  const depositedAmounts = ['']
   for(let i=1; i <= this.state.poolsList.length; i++){
     let currentDeposit = await this.state.poolContract.methods.deposits(this.state.account, i).call()
     depositedAmounts.push([i, currentDeposit])
@@ -103,7 +103,7 @@ createPool = (name) => {
   this.setState({confirmNum: 0})
   try {
     this.state.poolContract.methods.createPool(name).send({ from: this.state.account }).on('transactionHash', async (hash) => {
-      this.setState({hash: hash, action: 'Created Pool', trxStatus: 'Pending'})
+      this.setState({hash: hash, action: 'Created Pool', trxStatus: 'Pending', confirmNum: 0})
       this.showNotification()
       
     }).on('receipt', async (receipt)  => {
@@ -135,7 +135,7 @@ poolDeposit = (id, amount) => {
   amount = this.state.web3.utils.toHex(this.state.web3.utils.toWei(amount, 'ether'))
   try {
     this.state.poolContract.methods.deposit(id, this.state.cETHAddress).send({ from: this.state.account, value: amount}).on('transactionHash', async (hash) => {
-       this.setState({hash: hash, action: 'Deposited ETH to Pool', trxStatus: 'Pending'})
+       this.setState({hash: hash, action: 'Deposited ETH to Pool', trxStatus: 'Pending', confirmNum: 0})
        this.showNotification()
 
       }).on('receipt', async (receipt) => {
@@ -169,7 +169,7 @@ poolWithdraw = (id, amount) => {
   amount = this.state.web3.utils.toHex(this.state.web3.utils.toWei(amount, 'ether'))
   try {
     this.state.poolContract.methods.withdraw(id, amount, this.state.cETHAddress).send({ from: this.state.account }).on('transactionHash', async (hash) => {
-       this.setState({hash: hash, action: 'Redeemed ETH from Pool', trxStatus: 'Pending'})
+       this.setState({hash: hash, action: 'Redeemed ETH from Pool', trxStatus: 'Pending', confirmNum: 0})
        this.showNotification()
 
       }).on('receipt', async (receipt) => {
@@ -303,11 +303,13 @@ constructor(props) {
               <div className='row'>
               {this.state.poolsList.map(pool => (
                 <Pool
+                  web3={this.state.web3}
                   key={pool.poolID}
                   pool={pool}
-                  depositedAmounts={this.state.depositedAmounts}
+                  depositedAmount={this.state.depositedAmounts[pool.poolID]}
                   poolDeposit={this.poolDeposit}
                   poolWithdraw={this.poolWithdraw}
+                  currentEthBalance = {this.state.currentEthBalance}
                 />  
               ))}
               </div>
