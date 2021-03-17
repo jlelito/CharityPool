@@ -3,8 +3,10 @@ import Identicon from 'identicon.js';
 import ethlogo from '../src_images/ETH.png';
 import coloreth from '../src_images/eth-diamond-rainbow.png';
 import 'react-bootstrap';
-import  { Pill }  from 'rimble-ui';
-import AccountModal from './AccountModal.js';
+import  { Pill }  from '../../node_modules/rimble-ui';
+import AccountModal from '../components/AccountModal.js';
+import Loader from 'react-loader-spinner';
+
 
 
 class Navbar extends Component {
@@ -38,7 +40,7 @@ class Navbar extends Component {
             }
             
             <>
-            {!this.props.isConnected ? 
+            {!this.props.isConnected && window.ethereum !== null && window.ethereum !== undefined ? 
               <>
               <button className="bg-dark">
                 <Pill className='mr-2 my-2' color="red" onClick={() => this.connectWallet()}>Connect to a Wallet</Pill>
@@ -55,11 +57,21 @@ class Navbar extends Component {
                 </div>
                 <img
                   className='mr-2 float-right rounded my-2'
-                  width='30'
-                  height='30'
+                  width='32'
+                  height='32'
                   src={`data:image/png;base64,${new Identicon(this.props.account, 30).toString()}`}
                   alt='identicon'
                 />
+                {this.props.trxStatus === 'Pending' ?
+                  <Loader
+                    className='mt-2' 
+                    type='Oval'
+                    color='#00BFFF'
+                    height={25}
+                    width={25} 
+                  />
+                  : null
+                }
                 <div className='text-white mx-2 my-2'>Ropsten Faucet: <a href='https://faucet.ropsten.be/' target='_blank' rel='noopener noreferrer'>Faucet</a></div>
               </> 
               : 
