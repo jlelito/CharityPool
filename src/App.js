@@ -29,7 +29,6 @@ class App extends Component {
     }
     await this.loadContractData()
     await this.loadPoolData()
-    console.log('Pools:', this.state.poolsList)
     this.setState({loading: false})
   }
 
@@ -96,18 +95,13 @@ async loadPoolData() {
   }
   this.setState({depositedAmounts})
   console.log('Deposits:', this.state.depositedAmounts)
-  console.log('Load Pool Data Contract:', this.state.poolContract)
 }
 
 //Creates Pools
-async createPool(name) {
-  console.log('Creating pool...')
-  console.log('Pool Contract:', this.state.poolContract)
-  console.log('Account:', this.state.account)
+createPool = (name) => {
 
   this.setState({confirmNum: 0})
   try {
-    console.log('Pool being created..')
     this.state.poolContract.methods.createPool(name).send({ from: this.state.account }).on('transactionHash', async (hash) => {
       this.setState({hash: hash, action: 'Created Pool', trxStatus: 'Pending'})
       this.showNotification()
@@ -137,8 +131,7 @@ async createPool(name) {
 }
 
 //Supply ETH to Pool
-async poolDeposit(id, amount) {
-  console.log('Pool Contract:', this.state.poolContract)
+poolDeposit = (id, amount) => {
   amount = this.state.web3.utils.toHex(this.state.web3.utils.toWei(amount, 'ether'))
   try {
     this.state.poolContract.methods.deposit(id, this.state.cETHAddress).send({ from: this.state.account, value: amount}).on('transactionHash', async (hash) => {
@@ -172,7 +165,7 @@ async poolDeposit(id, amount) {
 }
 
 //Withdraw ETH from Pool
-async poolWithdraw(id, amount) {
+poolWithdraw = (id, amount) => {
   amount = this.state.web3.utils.toHex(this.state.web3.utils.toWei(amount, 'ether'))
   try {
     this.state.poolContract.methods.withdraw(id, amount, this.state.cETHAddress).send({ from: this.state.account }).on('transactionHash', async (hash) => {
@@ -275,12 +268,12 @@ constructor(props) {
         :
         <>
           <Notification 
-              showNotification={this.state.showNotification}
-              action={this.state.action}
-              hash={this.state.hash}
-              ref={this.notificationOne}
-              amount={this.state.notifyAmount}
-              name={this.state.notifyName}
+            showNotification={this.state.showNotification}
+            action={this.state.action}
+            hash={this.state.hash}
+            ref={this.notificationOne}
+            trxStatus={this.state.trxStatus}
+            confirmNum={this.state.confirmNum}
           />
           &nbsp;
           <div className='mt-3'></div>
@@ -290,7 +283,6 @@ constructor(props) {
             <form className='col-4' onSubmit={async (e) => {
               e.preventDefault()
               let createPoolName = this.poolName.value.toString()
-              console.log('Creating Pool:', createPoolName)
               this.createPool(createPoolName)
             }}>
               <label>Pool Name</label>
@@ -323,7 +315,7 @@ constructor(props) {
             }
           
           <div className='row justify-content-center mt-4'>
-            Pool Contract on Etherscan: 
+            <p>Pool Contract on Etherscan: </p>
             <a className='ml-3' href={`https://ropsten.etherscan.io/address/${this.state.poolContractAddress}`} target='_blank'>Etherscan</a>
           </div>
         </>
