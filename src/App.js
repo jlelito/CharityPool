@@ -7,6 +7,7 @@ import Notification from './components/Notification.js';
 import Loading from './components/Loading.js';
 import ConnectionBanner from '@rimble/connection-banner';
 import cETH from './abis/cETHRopstenABI.json';
+import Pool from './components/Pool.js';
 
 class App extends Component {
 
@@ -47,7 +48,7 @@ class App extends Component {
     const networkId = await web3.eth.net.getId()
     this.setState({network: networkId})
   
-    if(this.state.network !== 5777) {
+    if(this.state.network !== 3) {
       this.setState({wrongNetwork: true})
       web3 = new Web3(new Web3.providers.HttpProvider(`https://ropsten.infura.io/v3/${process.env.REACT_APP_INFURA_API_KEY}`))
       await this.setState({web3})
@@ -89,17 +90,20 @@ async loadPoolData() {
   this.setState({poolsList})
 
   const depositedAmounts = []
-  for(let i=0; i < this.state.poolsList.length; i++){
+  for(let i=1; i <= this.state.poolsList.length; i++){
     let currentDeposit = await this.state.poolContract.methods.deposits(this.state.account, i).call()
     depositedAmounts.push([i, currentDeposit])
   }
   this.setState({depositedAmounts})
+  console.log('Deposits:', this.state.depositedAmounts)
+  console.log('Load Pool Data Contract:', this.state.poolContract)
 }
 
 //Creates Pools
 async createPool(name) {
   console.log('Creating pool...')
   console.log('Pool Contract:', this.state.poolContract)
+  console.log('Account:', this.state.account)
 
   this.setState({confirmNum: 0})
   try {
@@ -119,8 +123,6 @@ async createPool(name) {
         else if(receipt.status === false){
           this.setState({trxStatus: 'Failed'})
         }
-    }).on('error', (error) => {
-        window.alert('Error! Could not create Pool! Error:', error)
     }).on('confirmation', (confirmNum) => {
         if(confirmNum > 10) {
           this.setState({confirmNum : '10+'})
@@ -297,75 +299,26 @@ constructor(props) {
                 ref={(poolName) => { this.poolName = poolName }}
                 className='form-control form-control-md'
                 placeholder='Pool Name'
+                disabled={!this.state.isConnected}
                 required 
               />
               <button type='submit' className='btn btn-primary mt-2'>Create</button>
             </form>
           </div>
+          <h3 className='mt-5'>Contract cETH Balance: {this.state.contractCETHBalance}</h3>
           {this.state.poolsList.length === 0 ? <h1 className='my-5'>No Pools Found!</h1> : 
             <>
-            <div className='row'>
-            {this.state.poolsList.map(pool => (
-              <div className='col-sm-6'>
-                <div className='card mt-4 mx-3'>
-                  <div className='card-body'>
-                    <h5 className='card-title'>Pool #: {pool.poolID} </h5>
-                    <h5 className='card-title'>{pool.name} </h5>
-                    <div className='float-left'>
-                      <p className='card-text'>Pool Admin: {pool.admin}  </p>
-                      <p className='card-text'>Total Amount Deposited: {pool.amountDeposited}</p>
-                      <p className='card-text'>Prize Interest Amount: </p>
-                      <p className='card-text'>Next Prize Release Date: </p>
-                      <div className='row justify-content-center'>
-                      <form onSubmit={(e) => {
-                        let depositAmount
-                        e.preventDefault()
-                        depositAmount = this.depositInput.value.toString()
-                        this.poolDeposit(pool.poolID, depositAmount)
-                      }}>
-                        <input 
-                          type='number' 
-                          className='form-control mx-2' 
-                          placeholder='0' 
-                          min='.01' 
-                          step='.01'
-                          ref={(depositInput) => { this.depositInput = depositInput }}
-                          required 
-                        />
-
-                        <div className='row justify-content-center'>
-                          <button className='btn btn-primary' type='submit'>Deposit</button>
-                        </div>
-                      </form>
-                      <form onSubmit={(e) => {
-                        let withdrawAmount
-                        e.preventDefault()
-                        withdrawAmount = this.withdrawInput.value.toString()
-                        this.poolWithdraw(pool.poolID, withdrawAmount)
-                      }}>
-                        <input 
-                          type='number' 
-                          className='form-control mx-2' 
-                          placeholder='0' 
-                          min='.01' 
-                          step='.01'
-                          ref={(withdrawInput) => { this.withdrawInput = withdrawInput }}
-                          required 
-                        />
-                        <div className='row justify-content-center'>
-                          <button className='btn btn-primary' type='submit'>Withdraw</button>
-                        </div>
-                      </form>
-                      </div>
-                    </div>
-                  </div>
-                  <div className='card-footer'>
-                    <label>Your Amount Deposited: {this.state.depositedAmounts[pool.poolID][1]} </label>
-                  </div>
-                </div>        
-              </div>    
-            ))}
-            </div>
+              <div className='row'>
+              {this.state.poolsList.map(pool => (
+                <Pool
+                  key={pool.poolID}
+                  pool={pool}
+                  depositedAmounts={this.state.depositedAmounts}
+                  poolDeposit={this.poolDeposit}
+                  poolWithdraw={this.poolWithdraw}
+                />  
+              ))}
+              </div>
             </>
             }
           
