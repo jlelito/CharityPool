@@ -63,7 +63,7 @@ contract FriendsPoolTogether is CompoundWallet {
         redeemcETHTokens(amount, false, compoundAddress);
         address(msg.sender).transfer(amount);
         deposits[msg.sender][_id] -= amount;
-        pools[0].amountDeposited -= amount;
+        pools[_id].amountDeposited -= amount;
         emit withdrawed(_id, amount);
         
     }
