@@ -10,9 +10,8 @@ render() {
                 <div className='card-body'>
                     <h5 className='card-title'>Pool #: {this.props.pool.poolID} </h5>
                     <h5 className='card-title'>{this.props.pool.name} </h5>
-                    <div className='float-left'>
                         <p className='card-text'>Pool Admin: {this.props.pool.admin}  </p>
-                        <p className='card-text'>Total Amount Deposited: {this.props.pool.amountDeposited} Wei
+                        <p className='card-text'>Total Amount Deposited: {this.props.web3.utils.fromWei(this.props.pool.amountDeposited, 'Ether')} ETH
                             <img className='my-2' src={ethlogo} width='25' height='25' alt='ethlogo'/>
                         </p>
                         <p className='card-text'>Prize Interest Amount: </p>
@@ -26,18 +25,21 @@ render() {
                             this.depositInput.value = null
                             this.props.poolDeposit(this.props.pool.poolID, depositAmount)
                         }}>
-                            <input 
-                                type='number' 
-                                className='form-control mx-2 col-6' 
-                                placeholder='0 ETH' 
-                                min='.01' 
-                                step='.01'
-                                ref={(depositInput) => { this.depositInput = depositInput }}
-                                disabled={this.props.isConnected}
-                                required 
-                            />
                             <div className='row justify-content-center'>
-                            <button className='btn btn-primary' type='submit'>Deposit</button>
+                                <input 
+                                    type='number' 
+                                    className='form-control mx-2 col-6' 
+                                    placeholder='0 ETH' 
+                                    min='.01' 
+                                    step='.01'
+                                    ref={(depositInput) => { this.depositInput = depositInput }}
+                                    disabled={this.props.isConnected}
+                                    required 
+                                />
+                                <a className='text-muted mt-2' onClick={() => this.depositInput.value = this.props.currentEthBalance}>Max</a>
+                            </div>
+                            <div className='row justify-content-center'>
+                                <button className='btn btn-primary mt-1' type='submit'>Deposit</button>
                             </div>
                         </form>
 
@@ -48,6 +50,7 @@ render() {
                             this.withdrawInput.value = null
                             this.props.poolWithdraw(this.props.pool.poolID, withdrawAmount)
                         }}>
+                            <div className='row justify-content-center'>
                             <input 
                                 type='number' 
                                 className='form-control mx-2 col-6' 
@@ -58,16 +61,19 @@ render() {
                                 disabled={this.props.isConnected}
                                 required 
                             />
+                            <a className='text-muted mt-2' onClick={() => this.withdrawInput.value = this.props.web3.utils.fromWei(this.props.depositedAmount[1], 'Ether')}>Max</a>
+                            </div>
                             <div className='row justify-content-center'>
-                            <button className='btn btn-primary' type='submit'>Withdraw</button>
+                                <button className='btn btn-primary mt-1' type='submit'>Withdraw</button>
                             </div>
                         </form>
                         </div>
-                    </div>
                 </div>
                 <div className='card-footer'>
-                    {this.props.depositedAmounts[this.props.pool.poolID] != undefined ?
-                    <label>Your Amount Deposited: {this.props.depositedAmounts[this.props.pool.poolID][1]} </label>
+                    {this.props.depositedAmount != undefined ?
+                    <label>Your Amount Deposited: {this.props.web3.utils.fromWei(this.props.depositedAmount[1], 'Ether')} 
+                       ETH  <img className='my-2' src={ethlogo} width='25' height='25' alt='ethlogo'/>
+                    </label>
                     : 'None Deposited!'}
                 </div>
             </div>        
