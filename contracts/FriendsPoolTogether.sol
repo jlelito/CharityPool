@@ -40,9 +40,9 @@ contract FriendsPoolTogether is CompoundWallet {
     /// @dev Whitelist member for a pool
     /// @param _id the id of the pool to whitelist member to
     /// @param _memberTarget the address of the member to add to whitelist
-    function whitelist(uint _id, address memberTarget) public onlyPoolAdmin(_id) {
-        poolsWhitelist[memberTarget][_id] = true;
-        emit whitelistedEvent(_id, memberTarget);
+    function whitelist(uint _id, address _memberTarget) public onlyPoolAdmin(_id) {
+        poolsWhitelist[_memberTarget][_id] = true;
+        emit whitelistedEvent(_id, _memberTarget);
     }
     
     /// @dev Unwhitelist member for a pool
@@ -76,7 +76,7 @@ contract FriendsPoolTogether is CompoundWallet {
         address(msg.sender).transfer(_amount);
         deposits[msg.sender][_id] -= _amount;
         pools[_id].amountDeposited -= _amount;
-        ethDeposited -= amount;
+        ethDeposited -= _amount;
         emit withdrawed(_id, _amount);
     }
     
@@ -91,12 +91,12 @@ contract FriendsPoolTogether is CompoundWallet {
 
     /// @dev Calculates the interest accured for Pool
     /// @param _id the id of the pool to calculate the interest
-    function calculateInterest(uint _id) internal returns (uint) {
-        cETH cToken = cETH(address(0x859e9d8a4edadfedb5a2ff311243af80f85a91b8));
+    function calculateInterest(uint _id, address _compoundAddress) internal returns (uint) {
+        cETH cToken = cETH(_compoundAddress);
         //1. Retrieve how much total ETH Underlying in Contract
         uint contractEthUnderlying = cToken.balanceOfUnderlying(address(this));
         //2. Calculate what % of total balance underlying for pool (possible decimal issue)
-        uint poolPercentage = (pools[_id].amount / contractEthUnderlying)*100;
+        uint poolPercentage = (pools[_id].amountDeposited / contractEthUnderlying)*100;
         //3. Calculate the total interest to be paid out for contract
         uint totalInterest = contractEthUnderlying - ethDeposited;
         //4. Calculate the interest to be paid to pool
