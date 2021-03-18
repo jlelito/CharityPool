@@ -10,6 +10,8 @@ interface cETH {
     function redeem(uint) external returns (uint);
 
     function redeemUnderlying(uint) external returns (uint);
+
+    function balanceOfUnderlying(address) returns (uint);
 }
 
 contract CompoundWallet {
