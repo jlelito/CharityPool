@@ -84,23 +84,23 @@ contract FriendsPoolTogether is CompoundWallet {
     /// @dev Releases the interest  after the timeperiod
     /// @param _id the id of the pool to release the prize
     /// @param _target the target address to release the prize
-    function releasePrizeTarget(uint _id, address payable _target) internal {
+    function releasePrizeTarget(uint _id, address payable _target, address _compoundAddress) internal {
         //Release interest to target address
+        address(_target).transfer(calculateInterest(_id, _compoundAddress));
     }
 
 
     /// @dev Calculates the interest accured for Pool
     /// @param _id the id of the pool to calculate the interest
-    function calculateInterest(uint _id, address _compoundAddress) internal returns (uint) {
+    function calculateInterest(uint _id, address _compoundAddress) public onlyAdmin() returns (uint) {
         cETH cToken = cETH(_compoundAddress);
         //1. Retrieve how much total ETH Underlying in Contract
         uint contractEthUnderlying = cToken.balanceOfUnderlying(address(this));
-        //2. Calculate what % of total balance underlying for pool (possible decimal issue)
-        uint poolPercentage = (pools[_id].amountDeposited / contractEthUnderlying)*100;
-        //3. Calculate the total interest to be paid out for contract
+        //2. Calculate the total interest to be paid out for contract
         uint totalInterest = contractEthUnderlying - ethDeposited;
-        //4. Calculate the interest to be paid to pool
-        uint poolInterest = (poolPercentage*10) * (totalInterest / 1000);
+        //3. Calculate the interest to be paid to pool
+        uint poolInterest = (totalInterest * pools[_id].amountDeposited) / contractEthUnderlying;
+
         return poolInterest;
     }
     
