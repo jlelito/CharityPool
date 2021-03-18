@@ -71,8 +71,8 @@ render() {
                 </div>
                 <div className='card-footer'>
                     {this.props.depositedAmount != undefined ?
-                    <label>Your Amount Deposited: {this.props.web3.utils.fromWei(this.props.depositedAmount[1], 'Ether')} 
-                       ETH  <img className='my-2' src={ethlogo} width='25' height='25' alt='ethlogo'/>
+                    <label>Your Amount Deposited: {this.props.web3.utils.fromWei(this.props.depositedAmount[1], 'Ether')} ETH
+                         <img className='my-2' src={ethlogo} width='25' height='25' alt='ethlogo'/>
                     </label>
                     : 'None Deposited!'}
                 </div>
