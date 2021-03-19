@@ -74,61 +74,22 @@ async loadContractData() {
   await this.setState({cETHContract, cETHAddress: compoundCETHContractAddress})
   let cETHBalance = await this.state.cETHContract.methods.balanceOf(this.state.poolContractAddress).call()
   this.setState({contractCETHBalance: cETHBalance})
+  console.log('cETH Contract:', this.state.cETHContract)
+  let contractETHDeposited = await this.state.cETHContract.methods.balanceOfUnderlying(this.state.poolContractAddress).call()
+  contractETHDeposited = this.state.web3.utils.fromWei(contractETHDeposited, 'Ether')
+  this.setState({ contractETHDeposited })
 
 
 }
 
 async loadPoolData() {
-  let length
-  const poolsList = []
-  length = await this.state.poolContract.methods.nextId().call()
-  for(let i=1; i < length; i++){
-    let currentPool = await this.state.poolContract.methods.pools(i).call()
-    poolsList.push(currentPool)
-  }
-  this.setState({poolsList})
 
-  const depositedAmounts = ['']
-  for(let i=1; i <= this.state.poolsList.length; i++){
-    let currentDeposit = await this.state.poolContract.methods.deposits(this.state.account, i).call()
-    depositedAmounts.push([i, currentDeposit])
-  }
-  this.setState({depositedAmounts})
-  console.log('Deposits:', this.state.depositedAmounts)
+  let currentDeposit = await this.state.poolContract.methods.deposits(this.state.account).call()
+  
+  this.setState({depositedAmount: currentDeposit})
 }
 
-//Creates Pools
-createPool = (name) => {
 
-  this.setState({confirmNum: 0})
-  try {
-    this.state.poolContract.methods.createPool(name).send({ from: this.state.account }).on('transactionHash', async (hash) => {
-      this.setState({hash: hash, action: 'Created Pool', trxStatus: 'Pending', confirmNum: 0})
-      this.showNotification()
-      
-    }).on('receipt', async (receipt)  => {
-        await this.loadAccountData()
-        await this.loadContractData()
-        await this.loadPoolData()
-
-        if(receipt.status === true){
-          this.setState({trxStatus: 'Success'})
-        }
-        else if(receipt.status === false){
-          this.setState({trxStatus: 'Failed'})
-        }
-    }).on('confirmation', (confirmNum) => {
-        if(confirmNum > 10) {
-          this.setState({confirmNum : '10+'})
-        } else{
-        this.setState({confirmNum})
-        }
-    })
-    } catch(e) {
-      window.alert(e)
-    }
-
-}
 
 //Supply ETH to Pool
 poolDeposit = (id, amount) => {
@@ -216,8 +177,9 @@ constructor(props) {
     poolContract: {},
     poolContractAddress: null,
     contractCETHBalance: null,
+    contractETHDeposited : null,
     poolsList: [],
-    depositedAmounts: null,
+    depositedAmount: null,
     currentEthBalance: '0',
     hash: null,
     action: null,
@@ -277,47 +239,27 @@ constructor(props) {
           />
           &nbsp;
           <div className='mt-3'></div>
-          <h1 className='mt-1 mb-5'>Pool Together App</h1>
-          <h2>Create Pool</h2>
-          <div className='row justify-content-center'>
-            <form className='col-4' onSubmit={async (e) => {
-              e.preventDefault()
-              let createPoolName = this.poolName.value.toString()
-              this.createPool(createPoolName)
-            }}>
-              <label>Pool Name</label>
-              <input
-                type='text'
-                ref={(poolName) => { this.poolName = poolName }}
-                className='form-control form-control-md'
-                placeholder='Pool Name'
-                disabled={!this.state.isConnected}
-                required 
-              />
-              <button type='submit' className='btn btn-primary mt-2'>Create</button>
-            </form>
-          </div>
-          <h3 className='mt-5'>Contract cETH Balance: {this.state.contractCETHBalance}</h3>
+          <h1 className='mt-1 mb-5'>Charity Pool</h1>
+          <p>Pool Money together for Charity! Vote on the charity of the week to receive the interest!</p>
+          <h3 className='mt-5'>ETH Deposited to Contract: {this.state.contractETHDeposited} ETH</h3>
+          <h3 className='mt-2'>Contract cETH Balance: {this.state.contractCETHBalance} cETH</h3>
           {this.state.poolsList.length === 0 ? <h1 className='my-5'>No Pools Found!</h1> : 
             <>
               <div className='row'>
-              {this.state.poolsList.map(pool => (
                 <Pool
-                  web3={this.state.web3}
                   key={pool.poolID}
-                  pool={pool}
-                  depositedAmount={this.state.depositedAmounts[pool.poolID]}
+                  web3={this.state.web3}
+                  depositedAmount={this.state.depositedAmount}
                   poolDeposit={this.poolDeposit}
                   poolWithdraw={this.poolWithdraw}
                   currentEthBalance = {this.state.currentEthBalance}
-                />  
-              ))}
+                /> 
               </div>
             </>
             }
           
           <div className='row justify-content-center mt-4'>
-            <p>Pool Contract on Etherscan: </p>
+            <p>Charity Pool Contract on Etherscan: </p>
             <a className='ml-3' href={`https://ropsten.etherscan.io/address/${this.state.poolContractAddress}`} target='_blank'>Etherscan</a>
           </div>
         </>
