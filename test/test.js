@@ -20,22 +20,10 @@ contract("PoolTogether", accounts => {
     assert.equal(address, PoolTogetherInstance.address);
   });
 
-  //Test Creating Pools
-  it("Creates Pools", async () => {
-    let nextId = await PoolTogetherInstance.nextId();
-    nextId = nextId.toNumber();
-    console.log('Id before pool: ', nextId);
-    await PoolTogetherInstance.createPool();
-    nextId = await PoolTogetherInstance.nextId();
-    nextId = nextId.toNumber();
-    console.log('Id after pool: ', nextId);
-    assert.equal(nextId, 1);
-  });
-
   //Test funding Pools
-  it("Funds Pools", async () => {
-    
+  it("Deposit into Pool", async () => {
 
+  
   });
 
   //Test withdrawing from pools
