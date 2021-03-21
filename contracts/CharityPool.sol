@@ -5,9 +5,12 @@ import './CompoundWallet.sol';
 contract CharityPool is CompoundWallet {
     
     uint public ethDeposited = 0;
+    uint public nextId;
     address public admin;
     mapping(address => uint) public deposits;
     mapping(address => bool) public poolsWhitelist;
+    mapping(uint => CharityVote) public votes;
+    bool public voteActive;
     
     event whitelistedEvent(address member);
     event unWhitelistedEvent(address member);
@@ -16,6 +19,16 @@ contract CharityPool is CompoundWallet {
 
     constructor() public {
         admin = msg.sender;
+    }
+
+    struct CharityVote {
+        uint id;
+
+    }
+
+    struct Charity {
+        string name;
+        address payable targetAddress;
     }
  
     /// @dev Whitelist member for a pool
@@ -70,6 +83,13 @@ contract CharityPool is CompoundWallet {
         //2. Calculate the total interest to be paid out for contract
         uint totalInterest = contractEthUnderlying - ethDeposited;
         return totalInterest;
+    }
+
+
+    function createCharityVote() public onlyPoolAdmin() {
+        require(voteActive == false, 'vote is already active!');
+        new CharityVote(nextId);
+        nextId++;
     }
     
 
