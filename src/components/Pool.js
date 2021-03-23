@@ -3,15 +3,13 @@ import ethlogo from '../src_images/ETH.png';
 
 class Pool extends Component {
 
+
 render() {
     return(
-        <div className='col-sm-6' key={this.props.pool.poolID}>
+        <div className='col-sm-6'>
             <div className='card mt-4 mx-3'>
                 <div className='card-body'>
-                    <p className='card-text'>Pool Admin: {this.props.pool.admin}  </p>
-                    <p className='card-text'>Total Amount Deposited: {this.props.web3.utils.fromWei(this.props.pool.amountDeposited, 'Ether')} ETH
-                        <img className='my-2' src={ethlogo} width='25' height='25' alt='ethlogo'/>
-                    </p>
+                    <p className='card-text'>Pool Admin: {this.props.admin}  </p>
                     <p className='card-text'>Interest Amount: </p>
                     <p className='card-text'>Next Interest Release Date: </p>
                     <div className='row justify-content-center'>
@@ -21,7 +19,7 @@ render() {
                         e.preventDefault()
                         depositAmount = this.depositInput.value.toString()
                         this.depositInput.value = null
-                        this.props.poolDeposit(this.props.pool.poolID, depositAmount)
+                        this.props.poolDeposit(depositAmount)
                     }}>
                         <div className='row justify-content-center'>
                             <input 
@@ -46,7 +44,7 @@ render() {
                         e.preventDefault()
                         withdrawAmount = this.withdrawInput.value.toString()
                         this.withdrawInput.value = null
-                        this.props.poolWithdraw(this.props.pool.poolID, withdrawAmount)
+                        this.props.poolWithdraw(withdrawAmount)
                     }}>
                         <div className='row justify-content-center'>
                         <input 
@@ -69,7 +67,7 @@ render() {
                 </div>
                 <div className='card-footer'>
                     {this.props.depositedAmount != undefined ?
-                    <label>Your Amount Deposited: {this.props.web3.utils.fromWei(this.props.depositedAmount[1], 'Ether')} ETH
+                    <label>Your Amount Deposited:<b> {this.props.web3.utils.fromWei(this.props.depositedAmount, 'Ether')} ETH</b>
                          <img className='my-2' src={ethlogo} width='25' height='25' alt='ethlogo'/>
                     </label>
                     : 'None Deposited!'}
