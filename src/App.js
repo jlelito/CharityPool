@@ -313,7 +313,6 @@ constructor(props) {
           <WhitelistForm 
             poolWhitelist={this.poolWhitelist}
             poolUnwhitelist={this.poolUnwhitelist}
-          
           />
           
           : null
@@ -335,7 +334,11 @@ constructor(props) {
             </div>
 
             <div className='row mt-5 justify-content-center'>
-              <CharityVote />
+              <CharityVote
+                web3={this.state.web3}
+                depositedAmount={this.state.depositedAmount}
+              
+              />
             </div>
 
           <div className='row justify-content-center mt-4'>
