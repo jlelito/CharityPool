@@ -1,5 +1,5 @@
-const FriendsPoolTogether = artifacts.require("FriendsPoolTogether");
+const CharityPool = artifacts.require("CharityPool");
 
-module.exports = async function(deployer, accounts) {
-  deployer.deploy(FriendsPoolTogether);
+module.exports = async function(deployer) {
+  deployer.deploy(CharityPool);
 };
