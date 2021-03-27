@@ -5,7 +5,7 @@ class CharityVote extends Component {
     render() {
         return (
         <div>
-            <p>Voting Power: {this.props.depositedAmount} Votes</p>
+            <p><b>Voting Power: {this.props.depositedAmount} Votes</b></p>
             <ol>
                 <li className='row justify-content-center'>
                     <label>The Water Project</label>

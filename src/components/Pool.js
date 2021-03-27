@@ -57,7 +57,7 @@ render() {
                             disabled={this.props.isConnected}
                             required 
                         />
-                        <a className='text-muted mt-2' onClick={() => this.withdrawInput.value = this.props.web3.utils.fromWei(this.props.depositedAmount[1], 'Ether')}>Max</a>
+                        <a className='text-muted mt-2' onClick={() => this.withdrawInput.value = this.props.web3.utils.fromWei(this.props.depositedAmount, 'Ether')}>Max</a>
                         </div>
                         <div className='row justify-content-center'>
                             <button className='btn btn-primary mt-1' type='submit'>Withdraw</button>

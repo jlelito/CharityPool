@@ -15,7 +15,7 @@ class WhitelistForm extends Component {
               <div className='row justify-content-center'>
               <input 
                   type='text' 
-                  className='form-control mx-2 col-3' 
+                  className='form-control mx-2 col-4' 
                   placeholder='0x000...' 
                   ref={(targetAddress) => { this.targetAddress = targetAddress }}
                   disabled={this.props.isConnected}
