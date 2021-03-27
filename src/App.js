@@ -9,7 +9,8 @@ import ConnectionBanner from '@rimble/connection-banner';
 import cETH from './abis/cETHRopstenABI.json';
 import Pool from './components/Pool.js';
 import CharityVote from './components/CharityVote.js';
-import WhitelistForm from './components/WhitelistForm';
+import WhitelistForm from './components/WhitelistForm.js';
+import CreateCharity from './components/CreateCharity.js';
 
 class App extends Component {
 
@@ -309,12 +310,18 @@ constructor(props) {
           <p>Pool money together for Charity! Vote on the charity of the week to receive the interest!</p>
 
           {this.state.admin === this.state.account ? 
-          
-          <WhitelistForm 
-            poolWhitelist={this.poolWhitelist}
-            poolUnwhitelist={this.poolUnwhitelist}
-          />
-          
+          <>
+          <h2 className='mt-2'>Whitelist Addresses</h2>
+            <WhitelistForm 
+              poolWhitelist={this.poolWhitelist}
+              poolUnwhitelist={this.poolUnwhitelist}
+            />
+
+          <h2 className='mt-2'>Create Charities</h2>  
+            <CreateCharity 
+              poolCreateCharity={this.poolCreateCharity}
+            />
+          </>
           : null
 
           }
