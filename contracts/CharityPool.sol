@@ -5,28 +5,31 @@ import './CompoundWallet.sol';
 contract CharityPool is CompoundWallet {
     
     uint public ethDeposited = 0;
-    uint public nextId;
+    uint public nextId = 0;
     address public admin;
     mapping(address => uint) public deposits;
     mapping(address => bool) public poolsWhitelist;
-    mapping(uint => CharityVote) public votes;
-    bool public voteActive;
+    mapping(address => mapping(uint => uint)) public votes;
+    mapping(address => uint) public votingPower;
+    mapping(uint => Charity) public winners;
+    mapping(uint => Charity) public charities;
+    
     
     event whitelistedEvent(address member);
     event unWhitelistedEvent(address member);
     event deposited(uint depositAmount);
     event withdrawed(uint withdrawAmount);
+    event addedVotes(uint id, uint voteAmount);
+    event removedVotes(uint id, uint voteAmount);
 
     constructor() public {
         admin = msg.sender;
+        deposits[msg.sender] = 0;
     }
 
-    struct CharityVote {
-        uint id;
-
-    }
 
     struct Charity {
+        uint id;
         string name;
         address payable targetAddress;
     }
@@ -41,6 +44,7 @@ contract CharityPool is CompoundWallet {
     /// @dev Unwhitelist member for a pool
     /// @param _memberTarget the address of the member to remove from whitelist
     function unwhitelist(address _memberTarget) public onlyPoolAdmin() {
+        require(deposits[_memberTarget] == 0, 'cannot unwhitelist with deposits!');
         poolsWhitelist[_memberTarget] = false;
         emit unWhitelistedEvent(_memberTarget);
     }
@@ -85,13 +89,35 @@ contract CharityPool is CompoundWallet {
         return totalInterest;
     }
 
-
-    function createCharityVote() public onlyPoolAdmin() {
-        require(voteActive == false, 'vote is already active!');
-        new CharityVote(nextId);
+    /// @dev Creates a charity address
+    /// @param _name the name of the charity
+    /// @param _targetAddress the target address of the charity
+    function createCharity(string memory _name, address payable _targetAddress) public onlyAdmin() {
+        charities[nextId] = Charity(nextId, _name, _targetAddress);
         nextId++;
     }
-    
+
+    /// @dev Adds votes to a charity
+    /// @param _id the id of the charity
+    /// @param _voteAmount the amount of votes to add
+    function addVotes(uint _id, uint _voteAmount) public onlyMember() {
+        require(votingPower[msg.sender] >= _voteAmount, 'must have enough voting power!');
+        votes[msg.sender][_id] += _voteAmount;
+        votingPower[msg.sender] -= _voteAmount;
+        emit addedVotes(_id, _voteAmount);
+    }
+
+    /// @dev Removes votes from a charity    
+    /// @param _id the id of the charity
+    /// @param _voteAmount the amount of votes to remove
+    function removeVotes(uint _id, uint _voteAmount) public onlyMember() {
+        require(deposits[msg.sender] >= _voteAmount, 'not enough deposited to remove votes!');
+        require(votes[msg.sender][_id] >= _voteAmount, 'not enough votes in this charity to remove!');
+        votes[msg.sender][_id] -= _voteAmount;
+        votingPower[msg.sender] += _voteAmount;
+        emit removedVotes(_id, _voteAmount);
+    }
+
 
     /// @dev Can only be admin for pool modifier
     modifier onlyPoolAdmin() {
