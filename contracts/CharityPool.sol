@@ -11,6 +11,7 @@ contract CharityPool is CompoundWallet {
     mapping(address => bool) public poolsWhitelist;
     mapping(address => mapping(uint => uint)) public votes;
     mapping(address => uint) public votingPower;
+    mapping(uint => mapping(uint => Charity)) public charityVotes;
     mapping(uint => Charity) public winners;
     mapping(uint => Charity) public charities;
     
@@ -26,7 +27,6 @@ contract CharityPool is CompoundWallet {
         admin = msg.sender;
         deposits[msg.sender] = 0;
     }
-
 
     struct Charity {
         uint id;
@@ -54,6 +54,7 @@ contract CharityPool is CompoundWallet {
     function deposit(address payable _compoundAddress) public payable onlyMember() {
         deposits[msg.sender] += msg.value;
         ethDeposited += msg.value;
+        votingPower[msg.sender] += msg.value;
         supplyEthToCompound(_compoundAddress);
         emit deposited(msg.value);
     }
@@ -63,6 +64,7 @@ contract CharityPool is CompoundWallet {
     /// @param _compoundAddress the compound address to withdraw from
     function withdraw(uint _amount, address _compoundAddress) public onlyMember() {
         require(deposits[msg.sender] >= _amount, 'not enough deposited!');
+        require(votingPower[msg.sender] >= _amount, 'not enough voting power to withdraw that amount!');
         redeemcETHTokens(_amount, false, _compoundAddress);
         address(msg.sender).transfer(_amount);
         deposits[msg.sender] -= _amount;
@@ -104,6 +106,7 @@ contract CharityPool is CompoundWallet {
         require(votingPower[msg.sender] >= _voteAmount, 'must have enough voting power!');
         votes[msg.sender][_id] += _voteAmount;
         votingPower[msg.sender] -= _voteAmount;
+        //charityVotes[_id][]
         emit addedVotes(_id, _voteAmount);
     }
 
