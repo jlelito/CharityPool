@@ -83,8 +83,21 @@ async loadContractData() {
 }
 
 async loadPoolData() {
-  let currentDeposit = await this.state.poolContract.methods.deposits(this.state.account).call()
-  this.setState({depositedAmount: currentDeposit})
+  console.log(this.state.poolContract)
+  let charities = []
+  let currentCharity, votes, votingPower, charityVotes, deposits, nextId
+
+  nextId = await this.state.poolContract.methods.nextId().call()
+  console.log(nextId)
+
+  for(let i=0; i<nextId; i++){
+    currentCharity = await this.state.poolContract.methods.charities(i).call()
+    charities.push(currentCharity)
+  }
+
+  console.log(charities)
+
+  
 }
 
 
@@ -221,9 +234,101 @@ poolUnwhitelist = (targetAddress) => {
     }
 }
 
+poolCreateCharity = (name, address) => {
+  try {
+    this.state.poolContract.methods.createCharity(name, address).send({ from: this.state.account }).on('transactionHash', async (hash) => {
+       this.setState({hash: hash, action: 'Created Charity', trxStatus: 'Pending', confirmNum: 0})
+       this.showNotification()
 
-vote = (id, voteAmount) => {
-  console.log('voting')
+      }).on('receipt', async (receipt) => {
+          await this.loadAccountData()
+          await this.loadContractData()
+          await this.loadPoolData()
+
+          if(receipt.status === true){
+            this.setState({trxStatus: 'Success'})
+          }
+          else if(receipt.status === false){
+            this.setState({trxStatus: 'Failed'})
+          }
+      }).on('error', (error) => {
+          window.alert('Error! Could not create charity!')
+      }).on('confirmation', (confirmNum) => {
+          if(confirmNum > 10) {
+            this.setState({confirmNum : '10+'})
+          } else {
+          this.setState({confirmNum})
+          }
+      })
+    }
+    catch(e) {
+      window.alert(e)
+    }
+}
+
+
+addVotes = (id, voteAmount) => {
+  try {
+    this.state.poolContract.methods.addVotes(id, voteAmount).send({ from: this.state.account }).on('transactionHash', async (hash) => {
+       this.setState({hash: hash, action: 'Added Votes to Charity', trxStatus: 'Pending', confirmNum: 0})
+       this.showNotification()
+
+      }).on('receipt', async (receipt) => {
+          await this.loadAccountData()
+          await this.loadContractData()
+          await this.loadPoolData()
+
+          if(receipt.status === true){
+            this.setState({trxStatus: 'Success'})
+          }
+          else if(receipt.status === false){
+            this.setState({trxStatus: 'Failed'})
+          }
+      }).on('error', (error) => {
+          window.alert('Error! Could not add votes to charity!')
+      }).on('confirmation', (confirmNum) => {
+          if(confirmNum > 10) {
+            this.setState({confirmNum : '10+'})
+          } else {
+          this.setState({confirmNum})
+          }
+      })
+    }
+    catch(e) {
+      window.alert(e)
+    }
+}
+
+removeVotes = (id, voteAmount) => {
+  try {
+    this.state.poolContract.methods.removeVotes(id, voteAmount).send({ from: this.state.account }).on('transactionHash', async (hash) => {
+       this.setState({hash: hash, action: 'Removed Votes from Charity', trxStatus: 'Pending', confirmNum: 0})
+       this.showNotification()
+
+      }).on('receipt', async (receipt) => {
+          await this.loadAccountData()
+          await this.loadContractData()
+          await this.loadPoolData()
+
+          if(receipt.status === true){
+            this.setState({trxStatus: 'Success'})
+          }
+          else if(receipt.status === false){
+            this.setState({trxStatus: 'Failed'})
+          }
+      }).on('error', (error) => {
+          window.alert('Error! Could not remove votes from charity!')
+      }).on('confirmation', (confirmNum) => {
+          if(confirmNum > 10) {
+            this.setState({confirmNum : '10+'})
+          } else {
+          this.setState({confirmNum})
+          }
+      })
+    }
+    catch(e) {
+      window.alert(e)
+    }
 }
 
 showNotification = () => {
@@ -344,7 +449,7 @@ constructor(props) {
               <CharityVote
                 web3={this.state.web3}
                 depositedAmount={this.state.depositedAmount}
-              
+
               />
             </div>
 
