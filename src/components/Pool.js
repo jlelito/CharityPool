@@ -57,7 +57,9 @@ render() {
                             disabled={this.props.isConnected}
                             required 
                         />
+                        {this.props.depositAmount != 0 && this.props.depositAmount != null ? 
                         <a className='text-muted mt-2' onClick={() => this.withdrawInput.value = this.props.web3.utils.fromWei(this.props.depositedAmount, 'Ether')}>Max</a>
+                        : null}
                         </div>
                         <div className='row justify-content-center'>
                             <button className='btn btn-primary mt-1' type='submit'>Withdraw</button>
@@ -66,7 +68,7 @@ render() {
                     </div>
                 </div>
                 <div className='card-footer'>
-                    {this.props.depositedAmount != undefined ?
+                    {this.props.depositedAmount != null ?
                     <label>Your Amount Deposited:<b> {this.props.web3.utils.fromWei(this.props.depositedAmount, 'Ether')} ETH</b>
                          <img className='my-2' src={ethlogo} width='25' height='25' alt='ethlogo'/>
                     </label>
