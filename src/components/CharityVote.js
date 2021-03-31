@@ -5,10 +5,12 @@ class CharityVote extends Component {
     render() {
         return (
         <div>
-            <p><b>Voting Power: {this.props.depositedAmount} Votes</b></p>
+            <p><b>Voting Power: {this.props.votingPower} Votes</b></p>
             <ol>
-                <li className='row justify-content-center'>
-                    <label>The Water Project</label>
+                {this.props.charities.map(charity => (
+                <li className='row justify-content-center my-3' key={charity.id}>
+                    <div className='col-lg-12'>
+                    <label className='mt-1'>{charity.name}</label>
                     <input 
                         type='number' 
                         className='form-control mx-2 col-3' 
@@ -19,11 +21,13 @@ class CharityVote extends Component {
                         disabled={this.props.isConnected}
                         required 
                     />
-                    <button className='btn btn-primary mt-1' type='submit'>Vote</button>
+                    <button className='btn btn-primary btn-sm mx-1' onClick={() => this.props.addVotes(charity.id, this.voteInput.value.toString())}>Add Votes</button>
+                    <button className='btn btn-primary btn-sm mx-1' onClick={() => this.props.removeVotes(charity.id, this.voteInput.value.toString())}>Remove Votes</button>
+                    <div className='mt-1'>Votes: </div>
+                    <a className='ml-3 mt-1' href={`https://ropsten.etherscan.io/address/${charity.targetAddress}`} target='_blank'>Charity Address</a>
+                    </div>
                 </li>
-                <li>
-                    2nd charity
-                </li>
+            ))}
             </ol>
         </div>
         );

@@ -85,17 +85,27 @@ async loadContractData() {
 async loadPoolData() {
   console.log(this.state.poolContract)
   let charities = []
-  let currentCharity, votes, votingPower, charityVotes, deposits, nextId
+  let currentCharity, votes, votingPower, charityVotes, nextId, accountDepositedAmount
 
   nextId = await this.state.poolContract.methods.nextId().call()
-  console.log(nextId)
+  console.log('Next ID', nextId)
 
   for(let i=0; i<nextId; i++){
     currentCharity = await this.state.poolContract.methods.charities(i).call()
     charities.push(currentCharity)
   }
 
-  console.log(charities)
+  console.log('Charity List:', charities)
+  this.setState({charities})
+
+  accountDepositedAmount = await this.state.poolContract.methods.deposits(this.state.account).call()
+  votingPower = await this.state.poolContract.methods.votingPower(this.state.account).call()
+  
+
+  await this.setState({depositedAmount: accountDepositedAmount, votingPower})
+  console.log('deposited amt:', this.state.depositedAmount)
+  console.log('voting power:', this.state.votingPower)
+  
 
   
 }
@@ -351,7 +361,9 @@ constructor(props) {
     contractCETHBalance: null,
     contractETHDeposited : null,
     poolsList: [],
+    charities: [],
     depositedAmount: null,
+    votingPower: null,
     currentEthBalance: '0',
     hash: null,
     action: null,
@@ -442,6 +454,7 @@ constructor(props) {
                 poolDeposit={this.poolDeposit}
                 poolWithdraw={this.poolWithdraw}
                 currentEthBalance = {this.state.currentEthBalance}
+                votingPower={this.state.votingPower}
               /> 
             </div>
 
@@ -449,9 +462,13 @@ constructor(props) {
               <CharityVote
                 web3={this.state.web3}
                 depositedAmount={this.state.depositedAmount}
-
+                charities={this.state.charities}
+                votingPower={this.state.votingPower}
+                addVotes={this.addVotes}
+                removeVotes={this.removeVotes}
               />
             </div>
+            
 
           <div className='row justify-content-center mt-4'>
             <p>Charity Pool Contract on Etherscan: </p>
