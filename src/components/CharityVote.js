@@ -9,7 +9,7 @@ class CharityVote extends Component {
             <ol>
                 {this.props.charities.map(charity => (
                 <li className='row justify-content-center my-3' key={charity.id}>
-                    <div className='col-lg-12'>
+                
                     <label className='mt-1'>{charity.name}</label>
                     <input 
                         type='number' 
@@ -23,9 +23,9 @@ class CharityVote extends Component {
                     />
                     <button className='btn btn-primary btn-sm mx-1' onClick={() => this.props.addVotes(charity.id, this.voteInput.value.toString())}>Add Votes</button>
                     <button className='btn btn-primary btn-sm mx-1' onClick={() => this.props.removeVotes(charity.id, this.voteInput.value.toString())}>Remove Votes</button>
-                    <div className='mt-1'>Votes: </div>
+                    <div className='mt-1'>Votes: {charity.votes}</div>
                     <a className='ml-3 mt-1' href={`https://ropsten.etherscan.io/address/${charity.targetAddress}`} target='_blank'>Charity Address</a>
-                    </div>
+                    
                 </li>
             ))}
             </ol>
