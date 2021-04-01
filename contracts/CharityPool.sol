@@ -11,9 +11,8 @@ contract CharityPool is CompoundWallet {
     mapping(address => bool) public poolsWhitelist;
     mapping(address => mapping(uint => uint)) public votes;
     mapping(address => uint) public votingPower;
-    mapping(uint => mapping(uint => Charity)) public charityVotes;
     mapping(uint => Charity) public winners;
-    mapping(uint => Charity) public charities;
+    Charity[] public charities;
     
     
     event whitelistedEvent(address member);
@@ -32,6 +31,7 @@ contract CharityPool is CompoundWallet {
         uint id;
         string name;
         address payable targetAddress;
+        uint votes;
     }
  
     /// @dev Whitelist member for a pool
@@ -69,13 +69,23 @@ contract CharityPool is CompoundWallet {
         address(msg.sender).transfer(_amount);
         deposits[msg.sender] -= _amount;
         ethDeposited -= _amount;
+        votingPower[msg.sender] -= _amount;
         emit withdrawed(_amount);
     }
     
 
     /// @dev Releases the interest  after the timeperiod
-    /// @param _target the target address to release the prize
-    function releasePrizeTarget(address payable _target, address _compoundAddress) public onlyAdmin() {
+    /// @param _compoundAddress the compound address
+    function releasePrizeTarget(address _compoundAddress) public onlyAdmin() {
+        Charity memory mostVotes = charities[0];
+        uint charityLength = charities.length;
+
+        for (uint i=0; i<charityLength; i++) {
+            if(charities[i].votes > mostVotes.votes) {
+                mostVotes = charities[i];
+            }
+        }
+        address payable _target = mostVotes.targetAddress;
         //Release interest to target address
         address(_target).transfer(calculateInterest(_compoundAddress));
     }
@@ -95,7 +105,7 @@ contract CharityPool is CompoundWallet {
     /// @param _name the name of the charity
     /// @param _targetAddress the target address of the charity
     function createCharity(string memory _name, address payable _targetAddress) public onlyAdmin() {
-        charities[nextId] = Charity(nextId, _name, _targetAddress);
+        charities.push(Charity(nextId, _name, _targetAddress, 0));
         nextId++;
     }
 
@@ -106,7 +116,7 @@ contract CharityPool is CompoundWallet {
         require(votingPower[msg.sender] >= _voteAmount, 'must have enough voting power!');
         votes[msg.sender][_id] += _voteAmount;
         votingPower[msg.sender] -= _voteAmount;
-        //charityVotes[_id][]
+        charities[_id].votes += _voteAmount;
         emit addedVotes(_id, _voteAmount);
     }
 
@@ -118,6 +128,7 @@ contract CharityPool is CompoundWallet {
         require(votes[msg.sender][_id] >= _voteAmount, 'not enough votes in this charity to remove!');
         votes[msg.sender][_id] -= _voteAmount;
         votingPower[msg.sender] += _voteAmount;
+        charities[_id].votes -= _voteAmount;
         emit removedVotes(_id, _voteAmount);
     }
 
