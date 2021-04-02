@@ -114,6 +114,7 @@ contract CharityPool is CompoundWallet {
     /// @param _voteAmount the amount of votes to add
     function addVotes(uint _id, uint _voteAmount) public onlyMember() {
         require(votingPower[msg.sender] >= _voteAmount, 'must have enough voting power!');
+        require(_voteAmount > 0, 'cannot vote negative!');
         votes[msg.sender][_id] += _voteAmount;
         votingPower[msg.sender] -= _voteAmount;
         charities[_id].votes += _voteAmount;
@@ -126,6 +127,7 @@ contract CharityPool is CompoundWallet {
     function removeVotes(uint _id, uint _voteAmount) public onlyMember() {
         require(deposits[msg.sender] >= _voteAmount, 'not enough deposited to remove votes!');
         require(votes[msg.sender][_id] >= _voteAmount, 'not enough votes in this charity to remove!');
+        require(_voteAmount > 0, 'cannot vote negative!');
         votes[msg.sender][_id] -= _voteAmount;
         votingPower[msg.sender] += _voteAmount;
         charities[_id].votes -= _voteAmount;
