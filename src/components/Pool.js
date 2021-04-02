@@ -4,13 +4,27 @@ import ethlogo from '../src_images/ETH.png';
 class Pool extends Component {
 
 
+calculateInterest() {
+    let result
+    result = this.props.web3.utils.fromWei(this.props.poolInterest.toString(), 'Ether') / this.props.ethPrice
+    if(result < 1){
+        result = 'Less than $1'
+    }
+    return result
+}
+
+
 render() {
     return(
         <div className='col-sm-6'>
             <div className='card mt-4 mx-3'>
                 <div className='card-body'>
                     <p className='card-text'>Pool Admin: {this.props.admin}  </p>
-                    <p className='card-text'>Interest Amount: </p>
+                    {this.props.web3 === null ? null : 
+                    <p className='card-text'><b>Interest Amount: {this.props.web3.utils.fromWei(this.props.poolInterest.toString(), 'Ether')} ETH</b></p>
+                        }
+                    <p>Price of ETH: ${this.props.ethPrice} (powered by CoinGecko)</p>
+                    <p>Interest Amount: {}</p>
                     <p className='card-text'>Next Interest Release Date: </p>
                     <div className='row justify-content-center'>
 
@@ -26,8 +40,8 @@ render() {
                                 type='number' 
                                 className='form-control mx-2 col-6' 
                                 placeholder='0 ETH' 
-                                min='.01' 
-                                step='.01'
+                                min='.00001' 
+                                step='.00001'
                                 ref={(depositInput) => { this.depositInput = depositInput }}
                                 disabled={this.props.isConnected}
                                 required 
@@ -51,14 +65,14 @@ render() {
                             type='number' 
                             className='form-control mx-2 col-6' 
                             placeholder='0 ETH' 
-                            min='.01' 
-                            step='.01'
+                            min='.00001' 
+                            step='.00001'
                             ref={(withdrawInput) => { this.withdrawInput = withdrawInput }}
                             disabled={this.props.isConnected}
                             required 
                         />
-                        {this.props.depositAmount != 0 && this.props.depositAmount != null ? 
-                        <a className='text-muted mt-2' onClick={() => this.withdrawInput.value = this.props.web3.utils.fromWei(this.props.depositedAmount, 'Ether')}>Max</a>
+                        {this.props.votingPower != 0 && this.props.votingPower != null ? 
+                        <a className='text-muted mt-2' onClick={() => this.withdrawInput.value = this.props.web3.utils.fromWei(this.props.votingPower, 'Ether')}>Max</a>
                         : null}
                         </div>
                         <div className='row justify-content-center'>
@@ -66,10 +80,11 @@ render() {
                         </div>
                     </form>
                     </div>
+                    {/* <div className='row float-right text-muted'>Avaliable Withdraw Amount: {this.props.web3.utils.fromWei(this.props.votingPower, 'Ether')} Ether </div> */}
                 </div>
                 <div className='card-footer'>
                     {this.props.depositedAmount != null ?
-                    <label>Your Amount Deposited:<b> {this.props.web3.utils.fromWei(this.props.depositedAmount, 'Ether')} ETH</b>
+                    <label>Your Amount Deposited:<b> {this.props.web3.utils.fromWei(this.props.depositedAmount.toString(), 'Ether')} ETH</b>
                          <img className='my-2' src={ethlogo} width='25' height='25' alt='ethlogo'/>
                     </label>
                     : 'None Deposited!'}
