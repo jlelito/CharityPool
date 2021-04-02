@@ -65,8 +65,8 @@ render() {
                             type='number' 
                             className='form-control mx-2 col-6' 
                             placeholder='0 ETH' 
-                            min='.00001' 
-                            step='.00001'
+                            min='.0000000000000000000001' 
+                            step='.0001'
                             ref={(withdrawInput) => { this.withdrawInput = withdrawInput }}
                             disabled={this.props.isConnected}
                             required 
@@ -80,13 +80,17 @@ render() {
                         </div>
                     </form>
                     </div>
-                    {/* <div className='row float-right text-muted'>Avaliable Withdraw Amount: {this.props.web3.utils.fromWei(this.props.votingPower, 'Ether')} Ether </div> */}
                 </div>
                 <div className='card-footer'>
                     {this.props.depositedAmount != null ?
+                    <>
                     <label>Your Amount Deposited:<b> {this.props.web3.utils.fromWei(this.props.depositedAmount.toString(), 'Ether')} ETH</b>
                          <img className='my-2' src={ethlogo} width='25' height='25' alt='ethlogo'/>
                     </label>
+                    <label>Your Amount Avaliable to Withdraw:<b> {this.props.web3.utils.fromWei(this.props.votingPower.toString(), 'Ether')} ETH</b>
+                        <img className='my-2' src={ethlogo} width='25' height='25' alt='ethlogo'/>
+                    </label>
+                    </>
                     : 'None Deposited!'}
                 </div>
             </div>        
