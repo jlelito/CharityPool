@@ -554,6 +554,7 @@ constructor(props) {
               <CharityVote
                 key={charity.id}
                 web3={this.state.web3}
+                isConnected={this.state.isConnected}
                 depositedAmount={this.state.depositedAmount}
                 myVote={this.state.myVotes[charity.id]}
                 charity={charity}
