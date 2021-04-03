@@ -296,6 +296,7 @@ poolCreateCharity = (name, address) => {
 
 
 addVotes = (id, voteAmount) => {
+  voteAmount = this.state.web3.utils.toWei(voteAmount, 'milliether')
   
   try {
     this.state.poolContract.methods.addVotes(id, voteAmount).send({ from: this.state.account }).on('transactionHash', async (hash) => {
@@ -330,6 +331,7 @@ addVotes = (id, voteAmount) => {
 }
 
 removeVotes = (id, voteAmount) => {
+  voteAmount = this.state.web3.utils.toWei(voteAmount, 'milliether')
   try {
     this.state.poolContract.methods.removeVotes(id, voteAmount).send({ from: this.state.account }).on('transactionHash', async (hash) => {
        this.setState({hash: hash, action: 'Removed Votes from Charity', trxStatus: 'Pending', confirmNum: 0})
@@ -510,7 +512,7 @@ constructor(props) {
 
           }
 
-          {this.state.web3 !== null ?
+          {this.state.web3 !== null && this.state.web3 !== undefined ?
           <h3 className='mt-5'>ETH Deposited to Contract: {this.state.web3.utils.fromWei(this.state.poolETHDeposited)} ETH</h3>
           : null}
           <h3 className='mt-2'>Contract cETH Balance: {this.state.contractCETHBalance} cETH</h3>
@@ -531,9 +533,9 @@ constructor(props) {
             &nbsp;
             <hr/>
             <h2>Vote for Charities</h2>
-            {this.state.web3 !== null ?
+            {this.state.isConnected ?
             <>
-            <p><b>Your Voting Power: {this.state.web3.utils.fromWei(this.state.votingPower, 'milliether')} Votes</b></p>
+            <p><b>Your Voting Power: {this.state.web3.utils.fromWei(this.state.votingPower.toString(), 'milliether')} Votes</b></p>
             <p><b>Your Votes Delegated: {this.state.web3.utils.fromWei((this.state.depositedAmount - this.state.votingPower).toString(), 'milliether')} Votes</b></p>
             </>
             :  null}
@@ -551,9 +553,10 @@ constructor(props) {
                 votingPower={this.state.votingPower}
               />
               
+              
             ))}
             
-  
+            <a>Show More Charities</a>
             
 
           <div className='row justify-content-center mt-4'>
