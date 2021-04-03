@@ -34,6 +34,8 @@ class CharityVote extends Component {
                                 this.props.removeVotes(this.props.charity.id, this.voteInput.value.toString())
                                 this.voteInput.value = null
                             }}>Remove Votes</button>
+                            <a className='mt-2' onClick={() => this.voteInput.value = this.props.myVote}>Max</a>
+
 
                             <div className='mt-1'>Your Votes Delegated: {this.props.myVote}</div>
                         </div>
