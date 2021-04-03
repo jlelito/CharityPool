@@ -21,10 +21,12 @@ render() {
                 <div className='card-body'>
                     <p className='card-text'>Pool Admin: {this.props.admin}  </p>
                     {this.props.web3 === null ? null : 
-                    <p className='card-text'><b>Interest Amount: {this.props.web3.utils.fromWei(this.props.poolInterest.toString(), 'Ether')} ETH</b></p>
-                        }
-                    <p>Price of ETH: ${this.props.ethPrice} (powered by CoinGecko)</p>
-                    <p>Interest Amount: {}</p>
+                    <>
+                    <b className='card-text'>Interest Amount: <p className='text-success'>{this.props.web3.utils.fromWei(this.props.poolInterest.toString(), 'Ether')} ETH</p></b>
+                    <b>Interest $ Amount: <b className='text-success'>{this.calculateInterest()}</b></b>
+                    </>
+                    }
+                    <p className='text-info'>Price of ETH: ${this.props.ethPrice} (powered by CoinGecko)</p>
                     <p className='card-text'>Next Interest Release Date: </p>
                     <div className='row justify-content-center'>
 
@@ -82,7 +84,7 @@ render() {
                     </div>
                 </div>
                 <div className='card-footer'>
-                    {this.props.depositedAmount != null ?
+                    {this.props.depositedAmount != null && this.props.depositedAmount != undefined ?
                     <>
                     <label>Your Amount Deposited:<b> {this.props.web3.utils.fromWei(this.props.depositedAmount.toString(), 'Ether')} ETH</b>
                          <img className='my-2' src={ethlogo} width='25' height='25' alt='ethlogo'/>
