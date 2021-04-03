@@ -26,7 +26,7 @@ render() {
                     <b>Interest $ Amount: <b className='text-success'>{this.calculateInterest()}</b></b>
                     </>
                     }
-                    <p className='text-info'>Price of ETH: ${this.props.ethPrice} (powered by CoinGecko)</p>
+                    <p className='text-muted'>Price of ETH: ${this.props.ethPrice} (powered by CoinGecko)</p>
                     <p className='card-text'>Next Interest Release Date: </p>
                     <div className='row justify-content-center'>
 
@@ -86,11 +86,14 @@ render() {
                 <div className='card-footer'>
                     {this.props.depositedAmount != null && this.props.depositedAmount != undefined ?
                     <>
-                    <label>Your Amount Deposited:<b> {this.props.web3.utils.fromWei(this.props.depositedAmount.toString(), 'Ether')} ETH</b>
-                         <img className='my-2' src={ethlogo} width='25' height='25' alt='ethlogo'/>
+                    <label className='row justify-content-center'><p>Your Amount Deposited:<b> {this.props.web3.utils.fromWei(this.props.depositedAmount.toString(), 'Ether')} ETH</b></p>
+                         <img src={ethlogo} width='25' height='25' alt='ethlogo'/>
                     </label>
-                    <label>Your Amount Avaliable to Withdraw:<b> {this.props.web3.utils.fromWei(this.props.votingPower.toString(), 'Ether')} ETH</b>
-                        <img className='my-2' src={ethlogo} width='25' height='25' alt='ethlogo'/>
+                    <label className='row justify-content-center'><p>Your Amount Avaliable to Withdraw:<b className='text-success'> {this.props.web3.utils.fromWei(this.props.votingPower.toString(), 'Ether')} ETH</b></p>
+                        <img src={ethlogo} width='25' height='25' alt='ethlogo'/>
+                    </label>
+                    <label className='row justify-content-center'><p>ETH Delegated <b className='text-danger'> {this.props.web3.utils.fromWei((this.props.depositedAmount - this.props.votingPower).toString(), 'Ether')} ETH</b></p>
+                        <img src={ethlogo} width='25' height='25' alt='ethlogo'/>
                     </label>
                     </>
                     : 'None Deposited!'}
