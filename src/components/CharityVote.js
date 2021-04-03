@@ -17,7 +17,6 @@ class CharityVote extends Component {
     findCharityData(name) {
         this.props.charityDataState.forEach(element => {
             if(element.name === this.props.charity.name){
-                console.log('Found name!', element.name)
                 if(element.image !== null){
                     this.setState({imageFound : true})
                 }
@@ -34,7 +33,7 @@ class CharityVote extends Component {
                         <div className='card-body'>
                             <label className='mt-1'><b>{this.props.charity.name}</b></label>
                             <a className='ml-3 mt-1' href={`https://ropsten.etherscan.io/address/${this.props.charity.targetAddress}`} target='_blank'>Charity Address</a>
-                            <div className='mt-1'>Total Votes: {this.props.charity.votes}</div>
+                            <div className='mt-1 text-success'>Total Votes: {this.props.charity.votes}</div>
                             <input 
                                 type='number' 
                                 className='form-control mx-2 col' 
@@ -48,13 +47,13 @@ class CharityVote extends Component {
                             {this.props.votingPower != 0 && this.props.votingPower != null ? 
                                 <a className='mt-2' onClick={() => this.voteInput.value = this.props.web3.utils.fromWei(this.props.votingPower, 'milliether')}>Max</a>
                             : null}
-                            <button id='addvotes' className='btn btn-primary btn-sm mx-1 mt-1' type='button' onClick={() => {
+                            <button id='addvotes' className='btn btn-primary btn-sm mx-1 mt-1' type='button' disabled={this.props.votingPower <= 0 || !this.props.isConnected} onClick={() => {
                                 this.props.addVotes(this.props.charity.id, this.voteInput.value.toString())
                                 this.voteInput.value = null
                             }}>
                                 Add Votes
                             </button>
-                            <button id='removevotes' className='btn btn-primary btn-sm mx-1 mt-1' type='button' onClick={() => {
+                            <button id='removevotes' className='btn btn-primary btn-sm mx-1 mt-1' type='button' disabled={this.props.myVote <= 0 || !this.props.isConnected} onClick={() => {
                                 this.props.removeVotes(this.props.charity.id, this.voteInput.value.toString())
                                 this.voteInput.value = null
                             }}>Remove Votes</button>
