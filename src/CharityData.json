@@ -1,0 +1,22 @@
+{
+    "charities": [
+    {
+        "id": 0,
+        "name": "Red Cross",
+        "description": "The American Red Cross, also known as The American National Red Cross, is a humanitarian organization that provides emergency assistance, disaster relief, and disaster preparedness education in the United States",
+        "image": "red-cross"
+    },
+    {
+        "id": 1,
+        "name": "Mercy Corps",
+        "description": "Mercy Corps is a global non-governmental, humanitarian aid organization operating in transitional contexts that have undergone, or have been undergoing, various forms of economic, environmental, social and political instabilities.",
+        "image": null
+    },
+    {
+        "id": 2,
+        "name": "St Judes",
+        "description": "St Jude Children's Research Hospital, founded in 1962, is a pediatric treatment and research facility focused on children's catastrophic diseases, particularly leukemia and other cancers. ",
+        "image": null
+    }
+]
+}

@@ -11,6 +11,7 @@ import Pool from './components/Pool.js';
 import CharityVote from './components/CharityVote.js';
 import WhitelistForm from './components/WhitelistForm.js';
 import CreateCharity from './components/CreateCharity.js';
+import CharityData from './CharityData.json';
 
 class App extends Component {
 
@@ -95,7 +96,6 @@ async loadPoolData() {
       myVotes.push(currentVote)
     }
   }
-  console.log('charities:', charities)
 
   this.setState({charities, myVotes})
   if (this.state.account !== 'undefined' && this.state.account !== null) {
@@ -109,7 +109,6 @@ async loadPoolData() {
   
 
   await this.setState({depositedAmount: accountDepositedAmount, votingPower})
-  console.log('deposited amt:', this.state.depositedAmount)
   
   poolBalanceUnderlying = await this.state.cETHContract.methods.balanceOfUnderlying(this.state.poolContractAddress).call()
   poolETHDeposited = await this.state.poolContract.methods.ethDeposited().call()
@@ -428,13 +427,14 @@ constructor(props) {
     charities: [],
     myVotes: [],
     depositedAmount: null,
-    votingPower: null,
+    votingPower: 0,
     currentEthBalance: '0',
     hash: null,
     action: null,
     trxStatus: null,
     confirmNum: 0,
-    ethPrice: null
+    ethPrice: null,
+    charityDataState: CharityData.charities
   }
 }
 
@@ -535,8 +535,17 @@ constructor(props) {
             <h2>Vote for Charities</h2>
             {this.state.isConnected ?
             <>
-            <p><b>Your Voting Power: {this.state.web3.utils.fromWei(this.state.votingPower.toString(), 'milliether')} Votes</b></p>
-            <p><b>Your Votes Delegated: {this.state.web3.utils.fromWei((this.state.depositedAmount - this.state.votingPower).toString(), 'milliether')} Votes</b></p>
+            {this.state.votingPower === 0 ? 
+            <>
+              <p className='text-danger'><b>No Voting Power!</b></p>
+              <p><b>Your Votes Delegated: {this.state.web3.utils.fromWei((this.state.depositedAmount - this.state.votingPower).toString(), 'milliether')} Votes</b></p>
+            </>
+            : 
+            <>
+              <p className='text-success'><b>Your Voting Power: {this.state.web3.utils.fromWei(this.state.votingPower.toString(), 'milliether')} Votes</b></p>
+              <p><b>Your Votes Delegated: {this.state.web3.utils.fromWei((this.state.depositedAmount - this.state.votingPower).toString(), 'milliether')} Votes</b></p>
+            </>
+            }
             </>
             :  null}
             <p className='text-muted small'>Note: 1 ETH = 1000 Votes</p>
@@ -551,6 +560,7 @@ constructor(props) {
                 addVotes={this.addVotes}
                 removeVotes={this.removeVotes}
                 votingPower={this.state.votingPower}
+                charityDataState = {this.state.charityDataState}
               />
               
               

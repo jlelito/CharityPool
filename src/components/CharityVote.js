@@ -2,6 +2,30 @@ import React, { Component } from 'react';
 
 class CharityVote extends Component {
 
+    constructor(props){
+        super(props)
+        this.state = {
+            description: 'No Description Found!',
+            imageFound: false
+        }
+    }
+
+    componentDidMount() {
+        this.findCharityData(this.props.charity.name)
+    }
+
+    findCharityData(name) {
+        this.props.charityDataState.forEach(element => {
+            if(element.name === this.props.charity.name){
+                console.log('Found name!', element.name)
+                if(element.image !== null){
+                    this.setState({imageFound : true})
+                }
+                this.setState({description: element.description})
+            }
+        })
+    }
+
     render() {
         return (
             <>
@@ -36,10 +60,17 @@ class CharityVote extends Component {
                             }}>Remove Votes</button>
                             <a className='mt-2' onClick={() => this.voteInput.value = this.props.myVote}>Max</a>
 
-
                             <div className='mt-1'>Your Votes Delegated: {this.props.myVote}</div>
                         </div>
                     </form>
+                    <div className='card w-25'>
+                        <div className='card-body'>
+                            <p className='text-wrap'>{this.state.description}</p>   
+                        </div>         
+                    </div>
+                    {this.state.imageFound ? 'Image Found!'
+                    // <img src={require(`../src_images/${this.props.charityDataState.image}.jpg`)} alt='charity-image'/>
+                    : 'No Image Found!'}
                 </div>
             </>
         );
