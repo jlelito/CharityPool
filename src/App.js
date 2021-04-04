@@ -13,6 +13,7 @@ import WhitelistForm from './components/WhitelistForm.js';
 import CreateCharity from './components/CreateCharity.js';
 import CharityData from './CharityData.json';
 import magnify from './src_images/magnify.png';
+import ethlogo from './src_images/ETH.png';
 
 class App extends Component {
 
@@ -505,7 +506,14 @@ constructor(props) {
           <div className='mt-3'></div>
           <h1 className='mt-1 mb-3'>Charity Pool</h1>
           <p>Pool money together for Charity! Vote on the charity of the week to receive the interest!</p>
-
+          <ol>
+            <b>
+              <li>1. Make sure <a href='https://metamask.io/download' target='_blank'>MetaMask</a> is installed</li>
+              <li>2. Deposit test ETH into the pool below (test ETH faucet <a href='https://faucet.ropsten.be/' target='_blank'>here</a>)</li>
+              <li>3. <a href='#charityVote'>Vote on your favorite charity</a> to receive the interest!</li>
+            </b>
+          </ol>
+          <p>You can withdraw ETH that is not delegated at any time!</p>
           {this.state.admin === this.state.account ? 
           <>
           <h2 className='mt-2'>Whitelist Addresses</h2>
@@ -526,9 +534,14 @@ constructor(props) {
           }
 
           {this.state.web3 !== null && this.state.web3 !== undefined ?
-          <h3 className='mt-5'>ETH Deposited to Contract: {this.state.web3.utils.fromWei(this.state.poolETHDeposited)} ETH</h3>
+          <>
+          <div className='row justify-content-center'>
+            <h4 className='mt-5'>ETH Deposited to Contract: {this.state.web3.utils.fromWei(this.state.poolETHDeposited)} ETH</h4>
+            <img src={ethlogo} className='mt-5' width='30' height='30' alt='ethlogo'/>
+          </div>
+          </>
           : null}
-          <h3 className='mt-2'>Contract cETH Balance: {this.state.contractCETHBalance} cETH</h3>
+          <h4 className='mt-2'>Contract cETH Balance: {this.state.contractCETHBalance} cETH</h4>
             <div className='row justify-content-center'>
               <Pool
                 web3={this.state.web3}
@@ -548,7 +561,7 @@ constructor(props) {
 
             &nbsp;
             <hr/>
-            <h2>Vote for Charities</h2>
+            <h2 id='charityVote'>Vote for Charities</h2>
             {this.state.isConnected ?
             <>
             {this.state.votingPower === 0 ? 
@@ -593,7 +606,7 @@ constructor(props) {
               </div>
             </form>
             
-            
+           
             {this.state.currentCharities.map(charity => (
               <CharityVote
                 key={charity.id}
@@ -611,6 +624,7 @@ constructor(props) {
                 charityTarget={this.state.charityTarget}
               />  
             ))}
+            
             
             {(this.state.charities.length - this.state.currentCharities.length) % 3 !== 0 ? 
             <><a id='showmore' href='#showmore' onClick={(e) => {
