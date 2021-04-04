@@ -45,7 +45,7 @@ render() {
                                 min='.00001' 
                                 step='.00001'
                                 ref={(depositInput) => { this.depositInput = depositInput }}
-                                disabled={this.props.isConnected}
+                                disabled={!this.props.isConnected}
                                 required 
                             />
                             <a className='text-muted mt-2' onClick={() => this.depositInput.value = this.props.currentEthBalance}>Max</a>
@@ -70,7 +70,7 @@ render() {
                             min='.0000000000000000000001' 
                             step='.0001'
                             ref={(withdrawInput) => { this.withdrawInput = withdrawInput }}
-                            disabled={this.props.isConnected}
+                            disabled={!this.props.isConnected}
                             required 
                         />
                         {this.props.votingPower != 0 && this.props.votingPower != null ? 
