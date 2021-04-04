@@ -20,11 +20,10 @@ render() {
         <div className='col-sm-6'>
             <div className='card mt-4 mx-3'>
                 <div className='card-body'>
-                    <p className='card-text'>Pool Admin: {this.props.admin}  </p>
                     {this.props.web3 === null ? null : 
                     <>
-                    <b className='card-text'>Interest Amount: <p className='text-success'>{this.props.web3.utils.fromWei(this.props.poolInterest.toString(), 'Ether')} ETH</p></b>
-                    <b>Interest $ Amount: <b className='text-success'>{this.calculateInterest()}</b></b>
+                    <h5><b className='card-text'>Interest Amount: <p className='text-success'>{this.props.web3.utils.fromWei(this.props.poolInterest.toString(), 'Ether')} ETH</p></b></h5>
+                    <h5><b>Interest $ Amount: <b className='text-success'>{this.calculateInterest()}</b></b></h5>
                     </>
                     }
                     <p className='text-muted'>Price of ETH: ${this.props.ethPrice} (powered by CoinGecko)</p>
@@ -100,7 +99,7 @@ render() {
                             : null
                         }
                     </label>
-                    <label className='row justify-content-center'><p>Your Amount Avaliable to Withdraw:<b className='text-success'> {this.props.web3.utils.fromWei(this.props.votingPower.toString(), 'Ether')} ETH</b></p>
+                    <label className='row justify-content-center'><p>Avaliable to Withdraw:<b className='text-success'> {this.props.web3.utils.fromWei(this.props.votingPower.toString(), 'Ether')} ETH</b></p>
                         <img src={ethlogo} width='25' height='25' alt='ethlogo'/>
                     </label>
                     <label className='row justify-content-center'><p>ETH Delegated <b className='text-danger'> {this.props.web3.utils.fromWei((this.props.depositedAmount - this.props.votingPower).toString(), 'Ether')} ETH</b></p>
