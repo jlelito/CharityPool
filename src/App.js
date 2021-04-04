@@ -295,8 +295,8 @@ poolCreateCharity = (name, address) => {
 
 
 addVotes = (id, voteAmount) => {
+  this.setState({charityTarget: id})
   voteAmount = this.state.web3.utils.toWei(voteAmount, 'milliether')
-  
   try {
     this.state.poolContract.methods.addVotes(id, voteAmount).send({ from: this.state.account }).on('transactionHash', async (hash) => {
        this.setState({hash: hash, action: 'Added Votes to Charity', trxStatus: 'Pending', confirmNum: 0})
@@ -330,6 +330,7 @@ addVotes = (id, voteAmount) => {
 }
 
 removeVotes = (id, voteAmount) => {
+  this.setState({charityTarget: id})
   voteAmount = this.state.web3.utils.toWei(voteAmount, 'milliether')
   try {
     this.state.poolContract.methods.removeVotes(id, voteAmount).send({ from: this.state.account }).on('transactionHash', async (hash) => {
@@ -434,7 +435,8 @@ constructor(props) {
     trxStatus: null,
     confirmNum: 0,
     ethPrice: null,
-    charityDataState: CharityData.charities
+    charityDataState: CharityData.charities,
+    charityTarget: null
   }
 }
 
@@ -578,9 +580,8 @@ constructor(props) {
                 charityDataState = {this.state.charityDataState}
                 trxStatus={this.state.trxStatus}
                 action={this.state.action}
-              />
-              
-              
+                charityTarget={this.state.charityTarget}
+              />  
             ))}
             
             <a>Show More Charities</a>
