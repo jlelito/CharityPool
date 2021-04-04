@@ -12,6 +12,7 @@ import CharityVote from './components/CharityVote.js';
 import WhitelistForm from './components/WhitelistForm.js';
 import CreateCharity from './components/CreateCharity.js';
 import CharityData from './CharityData.json';
+import magnify from './src_images/magnify.png';
 
 class App extends Component {
 
@@ -98,8 +99,10 @@ async loadPoolData() {
   }
 
   this.setState({charities, myVotes})
+  this.sortCharities()
+  let currentCharities =  this.state.charities.slice(0, 2)
+  this.setState({currentCharities})
   if (this.state.account !== 'undefined' && this.state.account !== null) {
-
     accountDepositedAmount = await this.state.poolContract.methods.deposits(this.state.account).call()
     votingPower = await this.state.poolContract.methods.votingPower(this.state.account).call()
   } else{
@@ -117,17 +120,8 @@ async loadPoolData() {
 
 
   await this.getETHPrice()
-  this.sortCharities()
+  
 }
-
-async getETHPrice()  {
-  const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
-  const myJson = await response.json(); //extract JSON from the http response
-  // do something with myJson
-  this.setState({ethPrice: myJson.ethereum.usd})
-}
-
-
 
 //Supply ETH to Pool
 poolDeposit = (amount) => {
@@ -403,8 +397,24 @@ sortCharities = () => {
   this.setState({sortedCharities})
 }
 
+searchCharities = (searchInput) => {
+  console.log(this.state.charities)
+  let filteredCharities = this.state.charities.filter(charity => charity.name.toLowerCase().includes(searchInput.toLowerCase()))
+  this.setState({currentCharities: filteredCharities})
+}
+
+showMoreCharities = () => {
+  this.setState({currentCharities: this.state.charities.slice(0, this.state.currentCharities.length+3)})
+}
+
 showNotification = () => {
   this.notificationOne.current.updateShowNotify()
+}
+
+async getETHPrice()  {
+  const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd')
+  const myJson = await response.json()
+  this.setState({ethPrice: myJson.ethereum.usd})
 }
 
 constructor(props) {
@@ -426,6 +436,7 @@ constructor(props) {
     poolETHDeposited: null,
     poolInterest: null,
     charities: [],
+    currentCharities: [],
     myVotes: [],
     depositedAmount: null,
     votingPower: 0,
@@ -564,9 +575,25 @@ constructor(props) {
             </div>
             
             </div>
+
+            <form className='row justify-content-center mt-3'>
+              <div className='col-4'>
+                <div className='input-group'>
+                  <img src={magnify} className='float-right mt-1' width='35' height='35' alt='magnify'/>
+                  <input className='form-control form-control' type='text' placeholder='Search...' ref={(searchInput) => { this.searchInput = searchInput }}
+                    aria-label='Search'>
+                  </input>
+                  <button className='btn btn-primary' onClick={(e) => 
+                {
+                  e.preventDefault()
+                  this.searchCharities(this.searchInput.value.toString())
+                }}>Search</button>
+                </div>
+              </div>
+            </form>
             
             
-            {this.state.charities.map(charity => (
+            {this.state.currentCharities.map(charity => (
               <CharityVote
                 key={charity.id}
                 web3={this.state.web3}
@@ -584,7 +611,12 @@ constructor(props) {
               />  
             ))}
             
-            <a>Show More Charities</a>
+            {(this.state.charities.length - this.state.currentCharities.length) % 3 !== 0 ? 
+            <><a id='showmore' href='#showmore' onClick={(e) => {
+              e.preventDefault()
+              this.showMoreCharities()
+            }}>Show More Charities</a></>
+            : null}
             
 
           <div className='row justify-content-center mt-4'>
