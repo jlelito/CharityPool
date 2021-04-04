@@ -10,7 +10,7 @@ render() {
             <div className='row mt-5'></div>
             
             <h2 className='row justify-content-center mt-4'>
-            Loading Dapp.... 
+            Loading Charity Pool.... 
             </h2>
             <div className='row justify-content-center mt-4'>
                 <Loader 
