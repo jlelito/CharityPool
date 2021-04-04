@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Loader } from 'rimble-ui';
+import image from '../src_images/red-cross.jpg';
 
 class CharityVote extends Component {
 
@@ -7,6 +8,7 @@ class CharityVote extends Component {
         super(props)
         this.state = {
             description: 'No Description Found!',
+            image: null,
             imageFound: false
         }
     }
@@ -20,6 +22,7 @@ class CharityVote extends Component {
             if(element.name === this.props.charity.name){
                 if(element.image !== null){
                     this.setState({imageFound : true})
+                    this.setState({image: element.image})
                 }
                 this.setState({description: element.description})
             }
@@ -27,14 +30,13 @@ class CharityVote extends Component {
     }
 
     render() {
+        console.log('charity image:', `../src_images/${this.state.image}.jpg`)
         return (
             <>
                 <div className='row justify-content-center my-3'>
                     <form className='card'>
                         <div className='card-body'>
                             <label className='mt-1'><b>{this.props.charity.name}</b></label>
-                            <p>ID: {this.props.charity.id}</p>
-                            <p>Charity Target: {this.props.charityTarget}</p>
                             <a className='ml-3 mt-1' href={`https://ropsten.etherscan.io/address/${this.props.charity.targetAddress}`} target='_blank'>Charity Address</a>
                             <div className='row justify-content-center mt-1 text-success'>Total Votes: {this.props.web3.utils.fromWei(this.props.charity.votes.toString(), 'milliether')}
                             {this.props.trxStatus === 'Pending' && 
@@ -73,7 +75,9 @@ class CharityVote extends Component {
                                 this.props.removeVotes(this.props.charity.id, this.voteInput.value.toString())
                                 this.voteInput.value = null
                             }}>Remove Votes</button>
-                            <a className='mt-2' onClick={() => this.voteInput.value = this.props.myVote}>Max</a>
+                            {this.props.myVote != 0 && this.props.myVote != null ?
+                                <a className='mt-2' onClick={() => this.voteInput.value = this.props.myVote}>Max</a>
+                            : null}
                             {this.props.web3 !== 'undefined' && this.props.web3 !== null ?
                             <div className='mt-1'>Your Votes Delegated: {this.props.web3.utils.fromWei(this.props.myVote.toString(), 'milliether')}</div>
                             : null}
@@ -84,9 +88,12 @@ class CharityVote extends Component {
                             <p className='text-wrap'>{this.state.description}</p>   
                         </div>         
                     </div>
-                    {this.state.imageFound ? 'Image Found!'
-                    // <img src={require(`../src_images/${this.props.charityDataState.image}.jpg`)} alt='charity-image'/>
-                    : 'No Image Found!'}
+                    
+                    {this.state.imageFound ? 
+                        <img src={require(`../src_images/${this.state.image}.jpg`)} alt={`../src_images/${this.state.image}.jpg`}/>
+                    :
+                        <div className='row ml-3 mt-5'>No Image Found!</div>
+                    }
                 </div>
             </>
         );
