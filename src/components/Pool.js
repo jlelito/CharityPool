@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import ethlogo from '../src_images/ETH.png';
+import { Loader } from 'rimble-ui';
 
 class Pool extends Component {
 
@@ -88,6 +89,16 @@ render() {
                     <>
                     <label className='row justify-content-center'><p>Your Amount Deposited:<b> {this.props.web3.utils.fromWei(this.props.depositedAmount.toString(), 'Ether')} ETH</b></p>
                          <img src={ethlogo} width='25' height='25' alt='ethlogo'/>
+                         {this.props.trxStatus === 'Pending' && (this.props.action === 'Deposited ETH to Pool' || this.props.action === 'Redeemed ETH from Pool')  ? 
+                            <Loader 
+                                className='mt-1 ml-1'
+                                type='Oval'
+                                color='#00BFFF'
+                                height={35}
+                                width={35}>
+                            </Loader>
+                            : null
+                        }
                     </label>
                     <label className='row justify-content-center'><p>Your Amount Avaliable to Withdraw:<b className='text-success'> {this.props.web3.utils.fromWei(this.props.votingPower.toString(), 'Ether')} ETH</b></p>
                         <img src={ethlogo} width='25' height='25' alt='ethlogo'/>

@@ -100,7 +100,7 @@ async loadPoolData() {
 
   this.setState({charities, myVotes})
   this.sortCharities()
-  let currentCharities =  this.state.charities.slice(0, 2)
+  let currentCharities =  this.state.charities.slice(0, 3)
   this.setState({currentCharities})
   if (this.state.account !== 'undefined' && this.state.account !== null) {
     accountDepositedAmount = await this.state.poolContract.methods.deposits(this.state.account).call()
@@ -440,7 +440,7 @@ constructor(props) {
     myVotes: [],
     depositedAmount: null,
     votingPower: 0,
-    currentEthBalance: '0',
+    currentEthBalance: 0,
     hash: null,
     action: null,
     trxStatus: null,
@@ -469,7 +469,6 @@ constructor(props) {
       })
   
     }
-    //console.log('deposited amount:', this.state.depositedAmount, 'voting power:', this.state.votingPower, 'difference: ', this.state.depositedAmount - this.state.votingPower)
 
     return (
       <div className='App'>
@@ -542,6 +541,8 @@ constructor(props) {
                 poolInterest={this.state.poolInterest}
                 ethPrice={this.state.ethPrice}
                 isConnected={this.state.isConnected}
+                trxStatus={this.state.trxStatus}
+                action={this.state.action}
               /> 
             </div>
 
