@@ -70,7 +70,7 @@ render() {
                             min='.0000000000000000000001' 
                             step='.0001'
                             ref={(withdrawInput) => { this.withdrawInput = withdrawInput }}
-                            disabled={!this.props.isConnected}
+                            disabled={!this.props.isConnected || this.props.votingPower == 0 }
                             required 
                         />
                         {this.props.votingPower != 0 && this.props.votingPower != null ? 
@@ -78,7 +78,7 @@ render() {
                         : null}
                         </div>
                         <div className='row justify-content-center'>
-                            <button className='btn btn-primary mt-1' type='submit'>Withdraw</button>
+                            <button className='btn btn-primary mt-1' type='submit' disabled={!this.props.isConnected || this.props.votingPower == 0 }>Withdraw</button>
                         </div>
                     </form>
                     </div>
