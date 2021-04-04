@@ -456,6 +456,7 @@ constructor(props) {
       })
   
     }
+    //console.log('deposited amount:', this.state.depositedAmount, 'voting power:', this.state.votingPower, 'difference: ', this.state.depositedAmount - this.state.votingPower)
 
     return (
       <div className='App'>
@@ -527,6 +528,7 @@ constructor(props) {
                 votingPower={this.state.votingPower}
                 poolInterest={this.state.poolInterest}
                 ethPrice={this.state.ethPrice}
+                isConnected={this.state.isConnected}
               /> 
             </div>
 
@@ -536,19 +538,31 @@ constructor(props) {
             {this.state.isConnected ?
             <>
             {this.state.votingPower === 0 ? 
-            <>
-              <p className='text-danger'><b>No Voting Power!</b></p>
-              <p><b>Your Votes Delegated: {this.state.web3.utils.fromWei((this.state.depositedAmount - this.state.votingPower).toString(), 'milliether')} Votes</b></p>
-            </>
+              <>
+                <p className='text-danger'><b>No Voting Power!</b></p>
+                <p><b>Your Votes Delegated: {this.state.web3.utils.fromWei((this.state.depositedAmount - this.state.votingPower).toString(), 'milliether')} Votes</b></p>
+              </>
             : 
-            <>
-              <p className='text-success'><b>Your Voting Power: {this.state.web3.utils.fromWei(this.state.votingPower.toString(), 'milliether')} Votes</b></p>
-              <p><b>Your Votes Delegated: {this.state.web3.utils.fromWei((this.state.depositedAmount - this.state.votingPower).toString(), 'milliether')} Votes</b></p>
-            </>
+              <>
+                <p className='text-success'><b>Your Voting Power: {this.state.web3.utils.fromWei(this.state.votingPower.toString(), 'milliether')} Votes</b></p>
+                <p><b>Your Votes Delegated: {this.state.web3.utils.fromWei((this.state.depositedAmount - this.state.votingPower).toString(), 'milliether')} Votes</b></p>
+              </>
             }
             </>
             :  null}
-            <p className='text-muted small'>Note: 1 ETH = 1000 Votes</p>
+            <div className='row justify-content-center'>
+            <div className='col-auto' className='text-muted small'>
+              Conversion Rate: 
+            </div>
+            <div className='col-auto float-left'>
+              <li className='text-muted small'>.001 ETH = 1 Vote</li>
+              <li className='text-muted small'>.01 ETH = 10 Votes</li>
+              <li className='text-muted small'>.1 ETH = 100 Votes</li>
+              <li className='text-muted small'>1 ETH = 1000 Votes</li>
+            </div>
+            
+            </div>
+            
             
             {this.state.charities.map(charity => (
               <CharityVote
@@ -562,6 +576,8 @@ constructor(props) {
                 removeVotes={this.removeVotes}
                 votingPower={this.state.votingPower}
                 charityDataState = {this.state.charityDataState}
+                trxStatus={this.state.trxStatus}
+                action={this.state.action}
               />
               
               
