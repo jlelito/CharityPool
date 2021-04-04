@@ -11,7 +11,7 @@ contract CharityPool is CompoundWallet {
     mapping(address => bool) public poolsWhitelist;
     mapping(address => mapping(uint => uint)) public votes;
     mapping(address => uint) public votingPower;
-    mapping(uint => Charity) public winners;
+    Charity[] public winners;
     Charity[] public charities;
     
     
@@ -88,6 +88,7 @@ contract CharityPool is CompoundWallet {
         address payable _target = mostVotes.targetAddress;
         //Release interest to target address
         address(_target).transfer(calculateInterest(_compoundAddress));
+        winners.push(mostVotes);
     }
 
 
