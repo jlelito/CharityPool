@@ -1,5 +1,6 @@
-import { Box, Modal, Button, Text, Card, Heading, EthAddress, Icon } from 'rimble-ui';
+import { Box, Modal, Flex, Button, Text, Card, Heading, EthAddress, Icon } from 'rimble-ui';
 import React, { Component } from 'react';
+import { Loader } from 'rimble-ui';
 
 class AccountModal extends Component {
 
@@ -55,6 +56,34 @@ class AccountModal extends Component {
                     />
                 </a>
               </Box>
+              <Flex>
+              <Box>
+                {this.props.trxStatus !== 'Pending' ? 
+                <>
+                <Box>
+                  <Text className='ml-4 mt-3'>No Transactions Pending</Text>
+                </Box>
+                </>
+                : <Box>
+                    <div className='row'>
+                      <Loader 
+                        className='mt-3 ml-5 mr-1'
+                        type='Oval'
+                        color='#00BFFF'
+                        height={50}
+                        width={50}>
+                      </Loader>
+                      <Text className='mt-3'>{this.props.action} : {this.props.amount}</Text>
+                      <a className='ml-2 mt-3' href={`https://ropsten.etherscan.io/tx/${this.props.hash}`} target='_blank' rel='noopener noreferrer'>
+                          Etherscan.io
+                      </a>
+                    </div>
+                  </Box>
+                  
+                }
+              
+              </Box>
+              </Flex>
             </Card>
           </Modal>
         </Box>

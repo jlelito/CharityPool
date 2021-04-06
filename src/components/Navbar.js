@@ -53,7 +53,13 @@ class Navbar extends Component {
                 <div id='balance' className='text-white mt-2'>{Number(this.props.balance).toFixed(3)} ETH</div>
                 <img className='my-2' src={ethlogo} width='25' height='25' alt='ethlogo'/>
                 <div id='account' className='text-white float-right my-2'>
-                  <AccountModal account={this.props.account}/> 
+                  <AccountModal 
+                    trxStatus={this.props.trxStatus}
+                    account={this.props.account}
+                    amount={this.props.amount}
+                    action={this.props.action}
+                    hash={this.props.hash}
+                  /> 
                 </div>
                 <img
                   className='mr-2 float-right rounded my-2'
