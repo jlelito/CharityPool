@@ -117,15 +117,22 @@ async loadPoolData() {
   poolETHDeposited = await this.state.poolContract.methods.ethDeposited().call()
   poolInterest = poolBalanceUnderlying - poolETHDeposited
   this.setState({poolETHDeposited, poolInterest})
+  console.log(this.state.poolContract)
+  let events = await this.state.poolContract.getPastEvents('wonPrize', {fromBlock: 0, toBlock: 'latest'})
+  console.log('Events:', events)
+
+  console.log('Events Sliced:', events.slice(-3))
+  events = events.slice(-3)
+  this.setState({pastWinners: events})
 
 
   await this.getETHPrice()
-  console.log('contract:', this.state.poolContract)
   
 }
 
 //Supply ETH to Pool
 poolDeposit = (amount) => {
+  this.setState({amount: amount})
   amount = this.state.web3.utils.toHex(this.state.web3.utils.toWei(amount, 'ether'))
   try {
     this.state.poolContract.methods.deposit(this.state.cETHAddress).send({ from: this.state.account, value: amount}).on('transactionHash', async (hash) => {
@@ -160,6 +167,7 @@ poolDeposit = (amount) => {
 
 //Withdraw ETH from Pool
 poolWithdraw = (amount) => {
+  this.setState({amount: amount})
   amount = this.state.web3.utils.toHex(this.state.web3.utils.toWei(amount, 'ether'))
   try {
     this.state.poolContract.methods.withdraw(amount, this.state.cETHAddress).send({ from: this.state.account }).on('transactionHash', async (hash) => {
@@ -227,7 +235,7 @@ poolCreateCharity = (name, address) => {
 
 
 addVotes = (id, voteAmount) => {
-  this.setState({charityTarget: id})
+  this.setState({charityTarget: id, amount: voteAmount})
   voteAmount = this.state.web3.utils.toWei(voteAmount, 'milliether')
   try {
     this.state.poolContract.methods.addVotes(id, voteAmount).send({ from: this.state.account }).on('transactionHash', async (hash) => {
@@ -262,7 +270,7 @@ addVotes = (id, voteAmount) => {
 }
 
 removeVotes = (id, voteAmount) => {
-  this.setState({charityTarget: id})
+  this.setState({charityTarget: id, amount: voteAmount})
   voteAmount = this.state.web3.utils.toWei(voteAmount, 'milliether')
   try {
     this.state.poolContract.methods.removeVotes(id, voteAmount).send({ from: this.state.account }).on('transactionHash', async (hash) => {
@@ -328,6 +336,7 @@ releasePrize = () => {
     }
 }
 
+
 sortCharities = () => {
   let sortedCharities = this.state.charities.sort(function(a,b){
     return b.votes - a.votes
@@ -385,7 +394,9 @@ constructor(props) {
     confirmNum: 0,
     ethPrice: null,
     charityDataState: CharityData.charities,
-    charityTarget: null
+    charityTarget: null,
+    amount: null,
+    pastWinners: []
   }
 }
 
@@ -417,6 +428,9 @@ constructor(props) {
           network={this.state.network}
           isConnected={this.state.isConnected}
           trxStatus={this.state.trxStatus}
+          amount={this.state.amount}
+          action={this.state.action}
+          hash={this.state.hash}
         />
 
         <div className='mt-5' />
@@ -438,6 +452,7 @@ constructor(props) {
             ref={this.notificationOne}
             trxStatus={this.state.trxStatus}
             confirmNum={this.state.confirmNum}
+            
           />
           &nbsp;
           <div className='mt-3'></div>
@@ -458,8 +473,8 @@ constructor(props) {
             <CreateCharity 
               poolCreateCharity={this.poolCreateCharity}
             />
-
-            <button className='btn btn-primary mt-5' onClick={() => this.releasePrize()}>Release Prize!</button>
+            <h5 className='mt-5'>Release Prize!</h5>
+            <button className='btn btn-primary mt-2' onClick={() => this.releasePrize()}>Release Prize!</button>
           </>
           : null
 
@@ -522,10 +537,20 @@ constructor(props) {
             <div className='row float-right '>
               <div className='card mr-5'>
                 <div className='card-text'>
-                  <h5>Previous Winners:</h5>
-                  <p>Date:</p>
-                  <p>Prize Amount:</p>
-                  <p># of Votes:</p>
+                  <h5 className='card-header'>Previous Winners:</h5>
+                  <ol>
+                  {this.state.pastWinners.length === 0 ? 'None Found!' :
+                  <>
+                  {this.state.pastWinners.map(winner => (
+                    <li>
+                      <p>Date:{winner.returnValues.timestamp}</p>
+                      <p>Prize Amount: {winner.returnValues.votes}</p>
+                      <p># of Votes: {winner.returnValues.votes}</p>
+                    </li>  
+                  ))}
+                  </>
+                  }
+                  </ol>
                 </div>
               </div>
             </div>
