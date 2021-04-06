@@ -17,6 +17,12 @@
         "name": "St Judes",
         "description": "St Jude Children's Research Hospital, founded in 1962, is a pediatric treatment and research facility focused on children's catastrophic diseases, particularly leukemia and other cancers. ",
         "image": null
+    },
+    {
+        "id": 3,
+        "name": "Habitat for Humanity",
+        "description": "Habitat for Humanity is a nonprofit organization that helps families build and improve places to call home. We believe affordable housing plays a critical role in strong and stable communities.",
+        "image": "habitat"
     }
 ]
 }
