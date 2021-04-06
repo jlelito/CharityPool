@@ -59,7 +59,7 @@ class CharityVote extends Component {
                                 min='1' 
                                 step='1'
                                 ref={(voteInput) => { this.voteInput = voteInput }}
-                                disabled={!this.props.isConnected}
+                                disabled={!this.props.isConnected || this.props.votingPower === 0}
                                 required 
                             />
                             {this.props.votingPower != 0 && this.props.votingPower != null ? 
@@ -76,10 +76,25 @@ class CharityVote extends Component {
                                 this.voteInput.value = null
                             }}>Remove Votes</button>
                             {this.props.myVote != 0 && this.props.myVote != null ?
-                                <a className='mt-2' onClick={() => this.voteInput.value = this.props.myVote}>Max</a>
+                                <a className='mt-2' onClick={() => this.voteInput.value = this.props.web3.utils.fromWei(this.props.myVote.toString(), 'milliether')}>Max</a>
                             : null}
                             {this.props.web3 !== 'undefined' && this.props.web3 !== null ?
-                            <div className='mt-1'>Your Votes Delegated: {this.props.web3.utils.fromWei(this.props.myVote.toString(), 'milliether')}</div>
+                            <>
+                            <div className='row justify-content-center mt-1'>Your Votes Delegated: {this.props.web3.utils.fromWei(this.props.myVote.toString(), 'milliether')}
+                            {this.props.trxStatus === 'Pending' && 
+                            this.props.charityTarget === this.props.charity.id &&
+                            (this.props.action === 'Added Votes to Charity' 
+                            || this.props.action === 'Removed Votes from Charity')  ? 
+                                <Loader 
+                                    className='mt-1 ml-1'
+                                    type='Oval'
+                                    color='#00BFFF'
+                                    height={25}
+                                    width={25}>
+                                </Loader> 
+                            : null}
+                            </div>
+                            </>
                             : null}
                         </div>
                     </form>
