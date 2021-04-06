@@ -30,14 +30,15 @@ class CharityVote extends Component {
     }
 
     render() {
-        console.log('charity image:', `../src_images/${this.state.image}.jpg`)
         return (
             <>
                 <div className='row justify-content-center my-3'>
                     <form className='card'>
-                        <div className='card-body'>
+                        <div className='card-header'>
                             <label className='mt-1'><b>{this.props.charity.name}</b></label>
                             <a className='ml-3 mt-1' href={`https://ropsten.etherscan.io/address/${this.props.charity.targetAddress}`} target='_blank'>Charity Address</a>
+                        </div>
+                        <div className='card-body'> 
                             <div className='row justify-content-center mt-1 text-success'>Total Votes: {this.props.web3.utils.fromWei(this.props.charity.votes.toString(), 'milliether')}
                             {this.props.trxStatus === 'Pending' && 
                             this.props.charityTarget === this.props.charity.id &&
@@ -65,13 +66,13 @@ class CharityVote extends Component {
                             {this.props.votingPower != 0 && this.props.votingPower != null ? 
                                 <a className='mt-2' onClick={() => this.voteInput.value = this.props.web3.utils.fromWei(this.props.votingPower, 'milliether')}>Max</a>
                             : null}
-                            <button id='addvotes' className='btn btn-primary btn-sm mx-1 mt-1' type='button' disabled={this.props.votingPower <= 0 || !this.props.isConnected} onClick={() => {
+                            <button id={'addvotes' + this.props.charity.id} className='btn btn-primary btn-sm mx-1 mt-1' type='button' disabled={this.props.votingPower <= 0 || !this.props.isConnected} onClick={() => {
                                 this.props.addVotes(this.props.charity.id, this.voteInput.value.toString())
                                 this.voteInput.value = null
                             }}>
                                 Add Votes
                             </button>
-                            <button id='removevotes' className='btn btn-primary btn-sm mx-1 mt-1' type='button' disabled={this.props.myVote <= 0 || !this.props.isConnected} onClick={() => {
+                            <button id={'removevotes' + this.props.charity.id} className='btn btn-primary btn-sm mx-1 mt-1' type='button' disabled={this.props.myVote <= 0 || !this.props.isConnected} onClick={() => {
                                 this.props.removeVotes(this.props.charity.id, this.voteInput.value.toString())
                                 this.voteInput.value = null
                             }}>Remove Votes</button>
