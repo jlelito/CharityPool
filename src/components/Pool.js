@@ -42,8 +42,8 @@ render() {
                                 type='number' 
                                 className='form-control mx-2 col-6' 
                                 placeholder='0 ETH' 
-                                min='.00001' 
-                                step='.00001'
+                                min='0' 
+                                step='.0000000000001'
                                 ref={(depositInput) => { this.depositInput = depositInput }}
                                 disabled={!this.props.isConnected}
                                 required 
@@ -67,8 +67,8 @@ render() {
                             type='number' 
                             className='form-control mx-2 col-6' 
                             placeholder='0 ETH' 
-                            min='.0000000000000000000001' 
-                            step='.0001'
+                            min='0' 
+                            step='.0000000000001'
                             ref={(withdrawInput) => { this.withdrawInput = withdrawInput }}
                             disabled={!this.props.isConnected || this.props.votingPower == 0 }
                             required 
@@ -93,8 +93,8 @@ render() {
                                 className='mt-1 ml-1'
                                 type='Oval'
                                 color='#00BFFF'
-                                height={35}
-                                width={35}>
+                                height={50}
+                                width={50}>
                             </Loader>
                             : null
                         }
