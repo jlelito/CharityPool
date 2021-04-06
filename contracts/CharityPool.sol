@@ -10,14 +10,13 @@ contract CharityPool is CompoundWallet {
     mapping(address => uint) public deposits;
     mapping(address => mapping(uint => uint)) public votes;
     mapping(address => uint) public votingPower;
-    Charity[] public winners;
     Charity[] public charities;
     
     event deposited(uint depositAmount);
     event withdrawed(uint withdrawAmount);
     event addedVotes(uint id, uint voteAmount);
     event removedVotes(uint id, uint voteAmount);
-    event wonPrize(uint timestamp, uint id, uint votes);
+    event wonPrize(uint timestamp, uint id, string name, uint prize, uint votes);
 
     constructor() public {
         admin = msg.sender;
@@ -69,11 +68,11 @@ contract CharityPool is CompoundWallet {
             }
         }
         address payable _target = mostVotes.targetAddress;
-        uint interest = calculateInterest(_compoundAddress);
+        uint prize = calculateInterest(_compoundAddress);
+        redeemcETHTokens(prize, false, _compoundAddress);
         //Release interest to target address
-        address(_target).transfer(interest);
-        winners.push(mostVotes);
-        emit wonPrize(block.timestamp, mostVotes.id, mostVotes.votes);
+        address(_target).transfer(prize);
+        emit wonPrize(block.timestamp, mostVotes.id, mostVotes.name, prize, mostVotes.votes);
     }
 
 
