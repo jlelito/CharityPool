@@ -8,19 +8,16 @@ contract CharityPool is CompoundWallet {
     uint public nextId = 0;
     address public admin;
     mapping(address => uint) public deposits;
-    mapping(address => bool) public poolsWhitelist;
     mapping(address => mapping(uint => uint)) public votes;
     mapping(address => uint) public votingPower;
     Charity[] public winners;
     Charity[] public charities;
     
-    
-    event whitelistedEvent(address member);
-    event unWhitelistedEvent(address member);
     event deposited(uint depositAmount);
     event withdrawed(uint withdrawAmount);
     event addedVotes(uint id, uint voteAmount);
     event removedVotes(uint id, uint voteAmount);
+    event wonPrize(uint timestamp, uint id, uint votes);
 
     constructor() public {
         admin = msg.sender;
@@ -34,24 +31,10 @@ contract CharityPool is CompoundWallet {
         uint votes;
     }
  
-    /// @dev Whitelist member for a pool
-    /// @param _memberTarget the address of the member to add to whitelist
-    function whitelist(address _memberTarget) public onlyPoolAdmin() {
-        poolsWhitelist[_memberTarget] = true;
-        emit whitelistedEvent(_memberTarget);
-    }
-    
-    /// @dev Unwhitelist member for a pool
-    /// @param _memberTarget the address of the member to remove from whitelist
-    function unwhitelist(address _memberTarget) public onlyPoolAdmin() {
-        require(deposits[_memberTarget] == 0, 'cannot unwhitelist with deposits!');
-        poolsWhitelist[_memberTarget] = false;
-        emit unWhitelistedEvent(_memberTarget);
-    }
     
      /// @dev Deposit into a pool
      /// @param _compoundAddress the compound address to deposit into
-    function deposit(address payable _compoundAddress) public payable onlyMember() {
+    function deposit(address payable _compoundAddress) public payable {
         deposits[msg.sender] += msg.value;
         ethDeposited += msg.value;
         votingPower[msg.sender] += msg.value;
@@ -62,7 +45,7 @@ contract CharityPool is CompoundWallet {
     /// @dev Withdraw from a pool
     /// @param _amount the amount of Wei to withdraw
     /// @param _compoundAddress the compound address to withdraw from
-    function withdraw(uint _amount, address _compoundAddress) public onlyMember() {
+    function withdraw(uint _amount, address _compoundAddress) public {
         require(deposits[msg.sender] >= _amount, 'not enough deposited!');
         require(votingPower[msg.sender] >= _amount, 'not enough voting power to withdraw that amount!');
         redeemcETHTokens(_amount, false, _compoundAddress);
@@ -80,15 +63,17 @@ contract CharityPool is CompoundWallet {
         Charity memory mostVotes = charities[0];
         uint charityLength = charities.length;
 
-        for (uint i=0; i<charityLength; i++) {
+        for (uint i=1; i<charityLength; i++) {
             if(charities[i].votes > mostVotes.votes) {
                 mostVotes = charities[i];
             }
         }
         address payable _target = mostVotes.targetAddress;
+        uint interest = calculateInterest(_compoundAddress);
         //Release interest to target address
-        address(_target).transfer(calculateInterest(_compoundAddress));
+        address(_target).transfer(interest);
         winners.push(mostVotes);
+        emit wonPrize(block.timestamp, mostVotes.id, mostVotes.votes);
     }
 
 
@@ -113,7 +98,7 @@ contract CharityPool is CompoundWallet {
     /// @dev Adds votes to a charity
     /// @param _id the id of the charity
     /// @param _voteAmount the amount of votes to add
-    function addVotes(uint _id, uint _voteAmount) public onlyMember() {
+    function addVotes(uint _id, uint _voteAmount) public {
         require(votingPower[msg.sender] >= _voteAmount, 'must have enough voting power!');
         require(_voteAmount > 0, 'cannot vote negative!');
         votes[msg.sender][_id] += _voteAmount;
@@ -125,7 +110,7 @@ contract CharityPool is CompoundWallet {
     /// @dev Removes votes from a charity    
     /// @param _id the id of the charity
     /// @param _voteAmount the amount of votes to remove
-    function removeVotes(uint _id, uint _voteAmount) public onlyMember() {
+    function removeVotes(uint _id, uint _voteAmount) public {
         require(deposits[msg.sender] >= _voteAmount, 'not enough deposited to remove votes!');
         require(votes[msg.sender][_id] >= _voteAmount, 'not enough votes in this charity to remove!');
         require(_voteAmount > 0, 'cannot vote negative!');
@@ -142,11 +127,7 @@ contract CharityPool is CompoundWallet {
         _;
     }
 
-    /// @dev Can only be members in pool modifier
-    modifier onlyMember() {
-        require(poolsWhitelist[msg.sender] == true, 'Must be a member!');
-        _;
-    }
+
     
     
 }

@@ -9,7 +9,6 @@ import ConnectionBanner from '@rimble/connection-banner';
 import cETH from './abis/cETHRopstenABI.json';
 import Pool from './components/Pool.js';
 import CharityVote from './components/CharityVote.js';
-import WhitelistForm from './components/WhitelistForm.js';
 import CreateCharity from './components/CreateCharity.js';
 import CharityData from './CharityData.json';
 import magnify from './src_images/magnify.png';
@@ -121,6 +120,7 @@ async loadPoolData() {
 
 
   await this.getETHPrice()
+  console.log('contract:', this.state.poolContract)
   
 }
 
@@ -192,69 +192,6 @@ poolWithdraw = (amount) => {
     }
 }
 
-poolWhitelist = (targetAddress) => {
-  try {
-    this.state.poolContract.methods.whitelist(targetAddress).send({ from: this.state.account }).on('transactionHash', async (hash) => {
-       this.setState({hash: hash, action: 'Whitelisted Member to Pool', trxStatus: 'Pending', confirmNum: 0})
-       this.showNotification()
-
-      }).on('receipt', async (receipt) => {
-          await this.loadAccountData()
-          await this.loadContractData()
-          await this.loadPoolData()
-
-          if(receipt.status === true){
-            this.setState({trxStatus: 'Success'})
-          }
-          else if(receipt.status === false){
-            this.setState({trxStatus: 'Failed'})
-          }
-      }).on('error', (error) => {
-          window.alert('Error! Could not whitelist member!')
-      }).on('confirmation', (confirmNum) => {
-          if(confirmNum > 10) {
-            this.setState({confirmNum : '10+'})
-          } else {
-          this.setState({confirmNum})
-          }
-      })
-    }
-    catch(e) {
-      window.alert(e)
-    }
-}
-
-poolUnwhitelist = (targetAddress) => {
-  try {
-    this.state.poolContract.methods.unwhitelist(targetAddress).send({ from: this.state.account }).on('transactionHash', async (hash) => {
-       this.setState({hash: hash, action: 'Unwhitelisted Member from Pool', trxStatus: 'Pending', confirmNum: 0})
-       this.showNotification()
-
-      }).on('receipt', async (receipt) => {
-          await this.loadAccountData()
-          await this.loadContractData()
-          await this.loadPoolData()
-
-          if(receipt.status === true){
-            this.setState({trxStatus: 'Success'})
-          }
-          else if(receipt.status === false){
-            this.setState({trxStatus: 'Failed'})
-          }
-      }).on('error', (error) => {
-          window.alert('Error! Could not unwhitelist member!')
-      }).on('confirmation', (confirmNum) => {
-          if(confirmNum > 10) {
-            this.setState({confirmNum : '10+'})
-          } else {
-          this.setState({confirmNum})
-          }
-      })
-    }
-    catch(e) {
-      window.alert(e)
-    }
-}
 
 poolCreateCharity = (name, address) => {
   try {
@@ -506,21 +443,16 @@ constructor(props) {
           <div className='mt-3'></div>
           <h1 className='mt-1 mb-3'>Charity Pool</h1>
           <p>Pool money together for Charity! Vote on the charity of the week to receive the interest!</p>
-          <ol>
-            <b>
-              <li>1. Make sure <a href='https://metamask.io/download' target='_blank'>MetaMask</a> is installed</li>
-              <li>2. Deposit test ETH into the pool below (test ETH faucet <a href='https://faucet.ropsten.be/' target='_blank'>here</a>)</li>
-              <li>3. <a href='#charityVote'>Vote on your favorite charity</a> to receive the interest!</li>
-            </b>
-          </ol>
+          
+          <b>
+            <li>1. Make sure <a href='https://metamask.io/download' target='_blank'>MetaMask</a> is installed</li>
+            <li>2. Deposit test ETH into the pool below (test ETH faucet <a href='https://faucet.ropsten.be/' target='_blank'>here</a>)</li>
+            <li>3. <a href='#charityVote'>Vote on your favorite charity</a> to receive the interest!</li>
+          </b>
+          
           <p>You can withdraw ETH that is not delegated at any time!</p>
           {this.state.admin === this.state.account ? 
           <>
-          <h2 className='mt-2'>Whitelist Addresses</h2>
-            <WhitelistForm 
-              poolWhitelist={this.poolWhitelist}
-              poolUnwhitelist={this.poolUnwhitelist}
-            />
 
           <h2 className='mt-2'>Create Charities</h2>  
             <CreateCharity 
@@ -541,7 +473,6 @@ constructor(props) {
           </div>
           </>
           : null}
-          <h4 className='mt-2'>Contract cETH Balance: {this.state.contractCETHBalance} cETH</h4>
             <div className='row justify-content-center'>
               <Pool
                 web3={this.state.web3}
@@ -578,16 +509,25 @@ constructor(props) {
             </>
             :  null}
             <div className='row justify-content-center'>
-            <div className='col-auto' className='text-muted small'>
-              Conversion Rate: 
+              <div className='col-auto' className='text-muted small'>
+                Conversion Rate: 
+              </div>
+              <div className='col-auto float-left'>
+                <li className='text-muted small'>.001 ETH = 1 Vote</li>
+                <li className='text-muted small'>.01 ETH = 10 Votes</li>
+                <li className='text-muted small'>.1 ETH = 100 Votes</li>
+                <li className='text-muted small'>1 ETH = 1000 Votes</li>
+              </div>
             </div>
-            <div className='col-auto float-left'>
-              <li className='text-muted small'>.001 ETH = 1 Vote</li>
-              <li className='text-muted small'>.01 ETH = 10 Votes</li>
-              <li className='text-muted small'>.1 ETH = 100 Votes</li>
-              <li className='text-muted small'>1 ETH = 1000 Votes</li>
-            </div>
-            
+            <div className='row float-right '>
+              <div className='card mr-5'>
+                <div className='card-text'>
+                  <h5>Previous Winners:</h5>
+                  <p>Date:</p>
+                  <p>Prize Amount:</p>
+                  <p># of Votes:</p>
+                </div>
+              </div>
             </div>
 
             <form className='row justify-content-center mt-3'>
@@ -606,24 +546,28 @@ constructor(props) {
               </div>
             </form>
             
-           
-            {this.state.currentCharities.map(charity => (
-              <CharityVote
-                key={charity.id}
-                web3={this.state.web3}
-                isConnected={this.state.isConnected}
-                depositedAmount={this.state.depositedAmount}
-                myVote={this.state.myVotes[charity.id]}
-                charity={charity}
-                addVotes={this.addVotes}
-                removeVotes={this.removeVotes}
-                votingPower={this.state.votingPower}
-                charityDataState = {this.state.charityDataState}
-                trxStatus={this.state.trxStatus}
-                action={this.state.action}
-                charityTarget={this.state.charityTarget}
-              />  
-            ))}
+            {this.state.currentCharities.length === 0 ? <h3>No Charities Found!</h3> : 
+              <>
+                {this.state.currentCharities.map(charity => (
+                  <CharityVote
+                    key={charity.id}
+                    web3={this.state.web3}
+                    isConnected={this.state.isConnected}
+                    depositedAmount={this.state.depositedAmount}
+                    myVote={this.state.myVotes[charity.id]}
+                    charity={charity}
+                    addVotes={this.addVotes}
+                    removeVotes={this.removeVotes}
+                    votingPower={this.state.votingPower}
+                    charityDataState = {this.state.charityDataState}
+                    trxStatus={this.state.trxStatus}
+                    action={this.state.action}
+                    charityTarget={this.state.charityTarget}
+                  />   
+                ))
+                }
+              </>
+            }
             
             
             {(this.state.charities.length - this.state.currentCharities.length) % 3 !== 0 ? 
