@@ -117,15 +117,11 @@ async loadPoolData() {
   poolETHDeposited = await this.state.poolContract.methods.ethDeposited().call()
   poolInterest = poolBalanceUnderlying - poolETHDeposited
   this.setState({poolETHDeposited, poolInterest})
-  console.log(this.state.poolContract)
   let events = await this.state.poolContract.getPastEvents('wonPrize', {fromBlock: 0, toBlock: 'latest'})
-  console.log('Events:', events)
-
-  console.log('Events Sliced:', events.slice(-3))
   events = events.slice(-3)
   this.setState({pastWinners: events})
 
-
+  this.sortWinners()
   await this.getETHPrice()
   
 }
@@ -344,6 +340,14 @@ sortCharities = () => {
   this.setState({sortedCharities})
 }
 
+sortWinners = () => {
+  let sortedWinners = this.state.pastWinners.sort(function(a,b){
+    return b.timestamp - a.timestamp
+  })
+  console.log('sorted winners"', sortedWinners)
+  this.setState({pastWinners: sortedWinners})
+}
+
 searchCharities = (searchInput) => {
   console.log(this.state.charities)
   let filteredCharities = this.state.charities.filter(charity => charity.name.toLowerCase().includes(searchInput.toLowerCase()))
@@ -356,6 +360,15 @@ showMoreCharities = () => {
 
 showNotification = () => {
   this.notificationOne.current.updateShowNotify()
+}
+
+calculateInterest() {
+  let result
+  result = this.state.web3.utils.fromWei(this.state.poolInterest.toString(), 'Ether') / this.state.ethPrice
+  if(result < 1) {
+      result = 'Less than $1'
+  }
+  return result
 }
 
 async getETHPrice()  {
@@ -495,6 +508,7 @@ constructor(props) {
                 depositedAmount={this.state.depositedAmount}
                 poolDeposit={this.poolDeposit}
                 poolWithdraw={this.poolWithdraw}
+                calculateInterest={this.calculateInterest}
                 currentEthBalance = {this.state.currentEthBalance}
                 votingPower={this.state.votingPower}
                 poolInterest={this.state.poolInterest}
@@ -537,15 +551,18 @@ constructor(props) {
             <div className='row float-right '>
               <div className='card mr-5'>
                 <div className='card-text'>
-                  <h5 className='card-header'>Previous Winners:</h5>
+                  <h5 className='card-header'>Previous Donations:</h5>
                   <ol>
                   {this.state.pastWinners.length === 0 ? 'None Found!' :
                   <>
                   {this.state.pastWinners.map(winner => (
-                    <li>
-                      <p>Date:{winner.returnValues.timestamp}</p>
-                      <p>Prize Amount: {winner.returnValues.votes}</p>
-                      <p># of Votes: {winner.returnValues.votes}</p>
+                    <li key={winner.id}>
+                      <p><b>Date: </b>{winner.returnValues.timestamp}</p>
+                      <p><b>Charity: </b> {winner.returnValues.name}</p>
+                      <p><b>Prize Amount: </b> {this.state.web3.utils.fromWei(winner.returnValues.prize, 'Ether')} ETH <img src={ethlogo} width='25' height='25' alt='ethlogo'/> </p>
+                      <p className='text-muted'>Worth ${this.state.web3.utils.fromWei(winner.returnValues.prize, 'Ether') / this.state.ethPrice}</p>
+                      <p><b># of Votes: </b> {this.state.web3.utils.fromWei(winner.returnValues.votes, 'milliether')}</p>
+                      <hr />
                     </li>  
                   ))}
                   </>
