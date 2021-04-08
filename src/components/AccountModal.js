@@ -61,7 +61,7 @@ class AccountModal extends Component {
                 {this.props.trxStatus !== 'Pending' ? 
                 <>
                 <Box>
-                  <Text className='ml-4 mt-3'>No Transactions Pending</Text>
+                  <Text className='ml-4 my-3'>No Transactions Pending</Text>
                 </Box>
                 </>
                 : <Box>
@@ -73,8 +73,8 @@ class AccountModal extends Component {
                         height={50}
                         width={50}>
                       </Loader>
-                      <Text className='mt-3'>{this.props.action} : {this.props.amount}</Text>
-                      <a className='ml-2 mt-3' href={`https://ropsten.etherscan.io/tx/${this.props.hash}`} target='_blank' rel='noopener noreferrer'>
+                      <Text className='my-3'>{this.props.action} : {this.props.amount}</Text>
+                      <a className='ml-2 my-3' href={`https://ropsten.etherscan.io/tx/${this.props.hash}`} target='_blank' rel='noopener noreferrer'>
                           Etherscan.io
                       </a>
                     </div>
