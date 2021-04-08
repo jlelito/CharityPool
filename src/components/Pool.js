@@ -4,16 +4,14 @@ import { Loader } from 'rimble-ui';
 
 class Pool extends Component {
 
-
-calculateInterest() {
-    let result
-    result = this.props.web3.utils.fromWei(this.props.poolInterest.toString(), 'Ether') / this.props.ethPrice
-    if(result < 1){
-        result = 'Less than $1'
-    }
-    return result
-}
-
+    calculateInterest() {
+        let result
+        result = this.props.web3.utils.fromWei(this.props.poolInterest.toString(), 'Ether') / this.props.ethPrice
+        if(result < 1) {
+            result = 'Less than $1'
+        }
+        return result
+      }
 
 render() {
     return(
@@ -43,7 +41,7 @@ render() {
                                 className='form-control mx-2 col-6' 
                                 placeholder='0 ETH' 
                                 min='0' 
-                                step='.0000000000001'
+                                step='.000001'
                                 ref={(depositInput) => { this.depositInput = depositInput }}
                                 disabled={!this.props.isConnected}
                                 required 
@@ -68,7 +66,7 @@ render() {
                             className='form-control mx-2 col-6' 
                             placeholder='0 ETH' 
                             min='0' 
-                            step='.0000000000001'
+                            step='.000001'
                             ref={(withdrawInput) => { this.withdrawInput = withdrawInput }}
                             disabled={!this.props.isConnected || this.props.votingPower == 0 }
                             required 
