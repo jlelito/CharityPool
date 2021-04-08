@@ -612,7 +612,7 @@ constructor(props) {
                     <>
                     {this.state.pastWinners.map(winner => (
                       <li key={winner.id}>
-                        <p><b>Date: </b>{winner.returnValues.timestamp}</p>
+                        <p><b>Date: </b>{(new Date(parseInt(winner.returnValues.timestamp) * 1000)).toLocaleString()}</p>
                         <p><b>Charity: </b> {winner.returnValues.name}</p>
                         <p><b>Prize Amount: </b> {this.state.web3.utils.fromWei(winner.returnValues.prize, 'Ether')} ETH <img src={ethlogo} width='25' height='25' alt='ethlogo'/> </p>
                         <p className='text-muted'>Worth:  
