@@ -33,7 +33,7 @@ class WhitelistForm extends Component {
               />
               </div>
               <div className='row justify-content-center'>
-                  <button className='btn btn-primary mt-1' type='submit'>Create</button>
+                  <button className='btn btn-primary mt-3' type='submit'>Create</button>
               </div>
             </form>
           </>

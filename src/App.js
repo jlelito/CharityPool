@@ -475,7 +475,7 @@ constructor(props) {
           
           <b>
             <li>1. Make sure <a href='https://metamask.io/download' target='_blank'>MetaMask</a> is installed</li>
-            <li>2. Deposit test ETH into the pool below (test ETH faucet <a href='https://faucet.ropsten.be/' target='_blank'>here</a>)</li>
+            <li>2. <a href='#deposit'>Deposit</a> test ETH into the pool below (test ETH faucet <a href='https://faucet.ropsten.be/' target='_blank'>here</a>)</li>
             <li>3. <a href='#charityVote'>Vote on your favorite charity</a> to receive the interest!</li>
           </b>
           
@@ -497,10 +497,11 @@ constructor(props) {
           {this.state.web3 !== null && this.state.web3 !== undefined ?
           <>
           <div className='row justify-content-center'>
-            <h4 className='mt-5'>ETH Deposited to Contract: {this.state.web3.utils.fromWei(this.state.poolETHDeposited)} ETH</h4>
+          <h5 className='mt-5'>ETH Deposited to Contract: {this.state.web3.utils.fromWei(this.state.poolETHDeposited)} ETH</h5>
             <img src={ethlogo} className='mt-5' width='30' height='30' alt='ethlogo'/>
           </div>
           </>
+          
           : null}
             <div className='row justify-content-center'>
               <Pool
@@ -519,7 +520,7 @@ constructor(props) {
                 action={this.state.action}
               /> 
             </div>
-
+            
             &nbsp;
             <hr/>
             <h2 id='charityVote'>Vote for Charities</h2>
@@ -606,7 +607,7 @@ constructor(props) {
               <div className='col-4 float-right'>
                 <div className='card mr-5 mt-4'>
                   <div className='card-text'>
-                    <h5 className='card-header'>Previous Donations:</h5>
+                    <h5 className='card-header justify-content-center'>Most Recent Donations</h5>
                     <ol>
                     {this.state.pastWinners.length === 0 ? 'None Found!' :
                     <>
@@ -614,8 +615,8 @@ constructor(props) {
                       <li key={winner.id}>
                         <p><b>Date: </b>{(new Date(parseInt(winner.returnValues.timestamp) * 1000)).toLocaleString()}</p>
                         <p><b>Charity: </b> {winner.returnValues.name}</p>
-                        <p><b>Prize Amount: </b> {this.state.web3.utils.fromWei(winner.returnValues.prize, 'Ether')} ETH <img src={ethlogo} width='25' height='25' alt='ethlogo'/> </p>
-                        <p className='text-muted'>Worth:  
+                        <p><b>Donation Amount: </b> {this.state.web3.utils.fromWei(winner.returnValues.prize, 'Ether')} ETH <img src={ethlogo} width='25' height='25' alt='ethlogo'/> </p>
+                        <p className='text-muted'>Donation $ Amount:  
                           {(this.state.web3.utils.fromWei(winner.returnValues.prize, 'Ether') / this.state.ethPrice) > 1 ?
                             ' $' + this.state.web3.utils.fromWei(winner.returnValues.prize, 'Ether') / this.state.ethPrice : 
                             ' Less Than $1'

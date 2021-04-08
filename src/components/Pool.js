@@ -17,15 +17,19 @@ render() {
     return(
         <div className='col-sm-6'>
             <div className='card mt-4 mx-3'>
+                <div className='card-header'>
+                    <h3>Deposit/Withdraw from Charity Pool</h3>
+                </div>
                 <div className='card-body'>
                     {this.props.web3 === null ? null : 
                     <>
+                    
+                    
                     <h5><b className='card-text'>Interest Amount: <p className='text-success'>{this.props.web3.utils.fromWei(this.props.poolInterest.toString(), 'Ether')} ETH</p></b></h5>
                     <h5><b>Interest $ Amount: <b className='text-success'>{this.calculateInterest()}</b></b></h5>
                     </>
                     }
                     <p className='text-muted'>Price of ETH: ${this.props.ethPrice} (powered by CoinGecko)</p>
-                    <p className='card-text'>Next Interest Release Date: </p>
                     <div className='row justify-content-center'>
 
                     <form onSubmit={(e) => {
@@ -49,7 +53,7 @@ render() {
                             <a className='text-muted mt-2' onClick={() => this.depositInput.value = this.props.currentEthBalance}>Max</a>
                         </div>
                         <div className='row justify-content-center'>
-                            <button className='btn btn-primary mt-1' type='submit'>Deposit</button>
+                            <button id='deposit' className='btn btn-primary mt-1' type='submit'>Deposit</button>
                         </div>
                     </form>
 
