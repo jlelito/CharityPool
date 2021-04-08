@@ -549,34 +549,7 @@ constructor(props) {
                 <li className='text-muted small'>1 ETH = 1000 Votes</li>
               </div>
             </div>
-            <div className='row float-right '>
-              <div className='card mr-5'>
-                <div className='card-text'>
-                  <h5 className='card-header'>Previous Donations:</h5>
-                  <ol>
-                  {this.state.pastWinners.length === 0 ? 'None Found!' :
-                  <>
-                  {this.state.pastWinners.map(winner => (
-                    <li key={winner.id}>
-                      <p><b>Date: </b>{winner.returnValues.timestamp}</p>
-                      <p><b>Charity: </b> {winner.returnValues.name}</p>
-                      <p><b>Prize Amount: </b> {this.state.web3.utils.fromWei(winner.returnValues.prize, 'Ether')} ETH <img src={ethlogo} width='25' height='25' alt='ethlogo'/> </p>
-                      <p className='text-muted'>Worth:  
-                        {(this.state.web3.utils.fromWei(winner.returnValues.prize, 'Ether') / this.state.ethPrice) > 1 ?
-                          ' $' + this.state.web3.utils.fromWei(winner.returnValues.prize, 'Ether') / this.state.ethPrice : 
-                          ' Less Than $1'
-                        }
-                      </p>
-                      <p><b># of Votes: </b> {this.state.web3.utils.fromWei(winner.returnValues.votes, 'milliether')}</p>
-                      <hr />
-                    </li>  
-                  ))}
-                  </>
-                  }
-                  </ol>
-                </div>
-              </div>
-            </div>
+            
 
             <form className='row justify-content-center mt-3'>
               <div className='col-4'>
@@ -586,36 +559,79 @@ constructor(props) {
                     aria-label='Search'>
                   </input>
                   <button className='btn btn-primary' onClick={(e) => 
-                {
-                  e.preventDefault()
-                  this.searchCharities(this.searchInput.value.toString())
-                }}>Search</button>
+                    {
+                      e.preventDefault()
+                      this.searchCharities(this.searchInput.value.toString())
+                    }}>
+                      Search
+                  </button>
+                  <button className='btn btn-primary ml-2' onClick={(e) => 
+                    {
+                      e.preventDefault()
+                      this.searchInput.value = null
+                      this.searchCharities('')
+                    }}>
+                      Reset
+                  </button>
                 </div>
               </div>
             </form>
             
-            {this.state.currentCharities.length === 0 ? <h3>No Charities Found!</h3> : 
-              <>
-                {this.state.currentCharities.map(charity => (
-                  <CharityVote
-                    key={charity.id}
-                    web3={this.state.web3}
-                    isConnected={this.state.isConnected}
-                    depositedAmount={this.state.depositedAmount}
-                    myVote={this.state.myVotes[charity.id]}
-                    charity={charity}
-                    addVotes={this.addVotes}
-                    removeVotes={this.removeVotes}
-                    votingPower={this.state.votingPower}
-                    charityDataState = {this.state.charityDataState}
-                    trxStatus={this.state.trxStatus}
-                    action={this.state.action}
-                    charityTarget={this.state.charityTarget}
-                  />   
-                ))
-                }
-              </>
-            }
+            <div className='row'>
+              <div className='col-8'>
+              {this.state.currentCharities.length === 0 ? <h3 className='mt-4'>No Charities Found!</h3> : 
+                <>
+                  {this.state.currentCharities.map(charity => (
+                    <CharityVote
+                      key={charity.id}
+                      web3={this.state.web3}
+                      isConnected={this.state.isConnected}
+                      depositedAmount={this.state.depositedAmount}
+                      myVote={this.state.myVotes[charity.id]}
+                      charity={charity}
+                      addVotes={this.addVotes}
+                      removeVotes={this.removeVotes}
+                      votingPower={this.state.votingPower}
+                      charityDataState = {this.state.charityDataState}
+                      trxStatus={this.state.trxStatus}
+                      action={this.state.action}
+                      charityTarget={this.state.charityTarget}
+                    />   
+                  ))
+                  }
+                </>
+              }
+              </div>
+
+              <div className='col-4 float-right'>
+                <div className='card mr-5 mt-4'>
+                  <div className='card-text'>
+                    <h5 className='card-header'>Previous Donations:</h5>
+                    <ol>
+                    {this.state.pastWinners.length === 0 ? 'None Found!' :
+                    <>
+                    {this.state.pastWinners.map(winner => (
+                      <li key={winner.id}>
+                        <p><b>Date: </b>{winner.returnValues.timestamp}</p>
+                        <p><b>Charity: </b> {winner.returnValues.name}</p>
+                        <p><b>Prize Amount: </b> {this.state.web3.utils.fromWei(winner.returnValues.prize, 'Ether')} ETH <img src={ethlogo} width='25' height='25' alt='ethlogo'/> </p>
+                        <p className='text-muted'>Worth:  
+                          {(this.state.web3.utils.fromWei(winner.returnValues.prize, 'Ether') / this.state.ethPrice) > 1 ?
+                            ' $' + this.state.web3.utils.fromWei(winner.returnValues.prize, 'Ether') / this.state.ethPrice : 
+                            ' Less Than $1'
+                          }
+                        </p>
+                        <p><b># of Votes: </b> {this.state.web3.utils.fromWei(winner.returnValues.votes, 'milliether')}</p>
+                        <hr />
+                      </li>  
+                    ))}
+                    </>
+                    }
+                    </ol>
+                  </div>
+                </div>
+              </div>
+            </div>
             
             
             {(this.state.charities.length - this.state.currentCharities.length) % 3 !== 0 ? 
