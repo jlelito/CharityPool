@@ -18,6 +18,7 @@ class App extends Component {
 
   async componentDidMount() {
     await this.loadBlockchainData()
+    
   }
 
   async loadBlockchainData() {
@@ -35,6 +36,17 @@ class App extends Component {
     await this.loadContractData()
     await this.loadPoolData()
     this.setState({loading: false})
+    //Update interest every 5 seconds
+    var self = this
+    var intervalId = window.setInterval(async function(){
+      let poolBalanceUnderlying, poolETHDeposited, poolInterest
+      poolBalanceUnderlying = await self.state.cETHContract.methods.balanceOfUnderlying(self.state.poolContractAddress).call()
+      poolETHDeposited = await self.state.poolContract.methods.ethDeposited().call()
+      poolInterest = poolBalanceUnderlying - poolETHDeposited
+      console.log('new interest:', poolInterest)
+      await self.setState({poolInterest})
+      self.getETHPrice()
+    }, 10000);
   }
 
   //Load account data
@@ -110,18 +122,14 @@ async loadPoolData() {
     votingPower = 0
   }
   
-
   await this.setState({depositedAmount: accountDepositedAmount, votingPower})
-  
   poolBalanceUnderlying = await this.state.cETHContract.methods.balanceOfUnderlying(this.state.poolContractAddress).call()
   poolETHDeposited = await this.state.poolContract.methods.ethDeposited().call()
   poolInterest = poolBalanceUnderlying - poolETHDeposited
   this.setState({poolETHDeposited, poolInterest})
   let events = await this.state.poolContract.getPastEvents('wonPrize', {fromBlock: 0, toBlock: 'latest'})
-  events = events.slice(-3)
+  events = events.slice(-3).reverse()
   this.setState({pastWinners: events})
-
-  this.sortWinners()
   await this.getETHPrice()
   
 }
@@ -340,13 +348,6 @@ sortCharities = () => {
   this.setState({sortedCharities})
 }
 
-sortWinners = () => {
-  let sortedWinners = this.state.pastWinners.sort(function(a,b){
-    return b.timestamp - a.timestamp
-  })
-  console.log('sorted winners"', sortedWinners)
-  this.setState({pastWinners: sortedWinners})
-}
 
 searchCharities = (searchInput) => {
   console.log(this.state.charities)
@@ -560,7 +561,12 @@ constructor(props) {
                       <p><b>Date: </b>{winner.returnValues.timestamp}</p>
                       <p><b>Charity: </b> {winner.returnValues.name}</p>
                       <p><b>Prize Amount: </b> {this.state.web3.utils.fromWei(winner.returnValues.prize, 'Ether')} ETH <img src={ethlogo} width='25' height='25' alt='ethlogo'/> </p>
-                      <p className='text-muted'>Worth ${this.state.web3.utils.fromWei(winner.returnValues.prize, 'Ether') / this.state.ethPrice}</p>
+                      <p className='text-muted'>Worth:  
+                        {(this.state.web3.utils.fromWei(winner.returnValues.prize, 'Ether') / this.state.ethPrice) > 1 ?
+                          ' $' + this.state.web3.utils.fromWei(winner.returnValues.prize, 'Ether') / this.state.ethPrice : 
+                          ' Less Than $1'
+                        }
+                      </p>
                       <p><b># of Votes: </b> {this.state.web3.utils.fromWei(winner.returnValues.votes, 'milliether')}</p>
                       <hr />
                     </li>  
