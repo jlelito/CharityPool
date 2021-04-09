@@ -1,8 +1,8 @@
 {
-  "name": "charitypooltogether",
+  "name": "CharityPool",
   "version": "0.1.0",
   "private": true,
-  "homepage": "http://jlelito.github.io/FriendsPoolTogether",
+  "homepage": "http://jlelito.github.io/CharityPool",
   "dependencies": {
     "@rimble/connection-banner": "^1.2.3",
     "@testing-library/jest-dom": "^5.11.9",
