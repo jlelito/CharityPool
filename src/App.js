@@ -13,6 +13,7 @@ import CreateCharity from './components/CreateCharity.js';
 import CharityData from './CharityData.json';
 import magnify from './src_images/magnify.png';
 import ethlogo from './src_images/ETH.png';
+import { Loader } from 'rimble-ui';
 
 class App extends Component {
 
@@ -378,8 +379,8 @@ async getETHPrice()  {
   this.setState({ethPrice: myJson.ethereum.usd})
 }
 
-constructor(props) {
-  super(props)
+constructor(state) {
+  super(state)
   this.notificationOne = React.createRef()
   this.state = {
     web3: null,
@@ -533,8 +534,33 @@ constructor(props) {
               </>
             : 
               <>
+              <div className='row justify-content-center'>
                 <p className='text-success'><b>Your Voting Power: {this.state.web3.utils.fromWei(this.state.votingPower.toString(), 'milliether')} Votes</b></p>
+                {this.state.trxStatus === 'Pending' && (this.state.action === 'Added Votes to Charity' || this.state.action === 'Removed Votes from Charity') ? 
+                  <Loader 
+                      className='mt-2 ml-1'
+                      type='Oval'
+                      color='#00BFFF'
+                      height={50}
+                      width={50}>
+                  </Loader>
+                  : null
+                }
+              </div>
+              <div className='row justify-content-center'>
                 <p><b>Your Votes Delegated: {this.state.web3.utils.fromWei((this.state.depositedAmount - this.state.votingPower).toString(), 'milliether')} Votes</b></p>
+                {this.state.trxStatus === 'Pending' && (this.state.action === 'Added Votes to Charity' || this.state.action === 'Removed Votes from Charity') ? 
+                  <Loader 
+                      className='mt-2 ml-1'
+                      type='Oval'
+                      color='#00BFFF'
+                      height={50}
+                      width={50}>
+                  </Loader>
+                  : null
+                }
+                </div>
+
               </>
             }
             </>
