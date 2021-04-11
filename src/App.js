@@ -583,7 +583,7 @@ constructor(state) {
             
 
             <form className='row justify-content-center mt-3'>
-              <div className='col-4'>
+              <div className='col-auto'>
                 <div className='input-group'>
                   <img src={magnify} className='float-right mt-1' width='35' height='35' alt='magnify'/>
                   <input className='form-control form-control' type='text' placeholder='Search...' ref={(searchInput) => { this.searchInput = searchInput }}
