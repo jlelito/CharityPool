@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/CharityPool/static/css/main.d058e95b.chunk.css",
-    "main.js": "/CharityPool/static/js/main.5fcdc895.chunk.js",
-    "main.js.map": "/CharityPool/static/js/main.5fcdc895.chunk.js.map",
+    "main.js": "/CharityPool/static/js/main.01f2ea0f.chunk.js",
+    "main.js.map": "/CharityPool/static/js/main.01f2ea0f.chunk.js.map",
     "runtime-main.js": "/CharityPool/static/js/runtime-main.c0cf6c09.js",
     "runtime-main.js.map": "/CharityPool/static/js/runtime-main.c0cf6c09.js.map",
     "static/css/2.150d169a.chunk.css": "/CharityPool/static/css/2.150d169a.chunk.css",
@@ -23,6 +23,6 @@
     "static/css/2.150d169a.chunk.css",
     "static/js/2.be486d37.chunk.js",
     "static/css/main.d058e95b.chunk.css",
-    "static/js/main.5fcdc895.chunk.js"
+    "static/js/main.01f2ea0f.chunk.js"
   ]
 }
