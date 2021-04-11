@@ -45,7 +45,6 @@ class App extends Component {
       poolBalanceUnderlying = await self.state.cETHContract.methods.balanceOfUnderlying(self.state.poolContractAddress).call()
       poolETHDeposited = await self.state.poolContract.methods.ethDeposited().call()
       poolInterest = poolBalanceUnderlying - poolETHDeposited
-      console.log('new interest:', poolInterest)
       await self.setState({poolInterest})
       self.getETHPrice()
     }, 10000);
@@ -496,15 +495,7 @@ constructor(state) {
 
           }
 
-          {this.state.web3 !== null && this.state.web3 !== undefined ?
-          <>
-          <div className='row justify-content-center'>
-          <h5 className='mt-5'>ETH Deposited to Contract: {this.state.web3.utils.fromWei(this.state.poolETHDeposited)} ETH</h5>
-            <img src={ethlogo} className='mt-5' width='30' height='30' alt='ethlogo'/>
-          </div>
-          </>
           
-          : null}
             <div className='row justify-content-center'>
               <Pool
                 web3={this.state.web3}
@@ -674,6 +665,15 @@ constructor(state) {
             
             
           <hr />
+          
+          {this.state.web3 !== null && this.state.web3 !== undefined ?
+          <>
+          <div className='row justify-content-center'>
+            <h5 className='mt-5'>ETH Deposited to Contract: {this.state.web3.utils.fromWei(this.state.poolETHDeposited)} ETH</h5>
+            <img src={ethlogo} className='mt-5' width='30' height='30' alt='ethlogo'/>
+          </div>
+          </>
+          : null}
           <footer className='row justify-content-center mt-4'>
             <p>Charity Pool Contract on Etherscan: </p>
             <a className='ml-3' href={`https://ropsten.etherscan.io/address/${this.state.poolContractAddress}`} target='_blank'>Etherscan</a>
