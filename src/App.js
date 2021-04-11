@@ -13,6 +13,7 @@ import CreateCharity from './components/CreateCharity.js';
 import CharityData from './CharityData.json';
 import magnify from './src_images/magnify.png';
 import ethlogo from './src_images/ETH.png';
+import donation from './src_images/donation.png';
 import { Loader } from 'rimble-ui';
 
 class App extends Component {
@@ -632,20 +633,26 @@ constructor(state) {
                   }
                 </>
               }
+              {(this.state.charities.length - this.state.currentCharities.length) % 3 !== 0 ? 
+            <><a id='showmore' href='#showmore' onClick={(e) => {
+              e.preventDefault()
+              this.showMoreCharities()
+            }}>Show More Charities</a></>
+            : null}
               </div>
 
-              <div className='col-4 float-right'>
-                <div className='card mr-5 mt-4'>
+              <div className='col-sm-4 float-right justify-content-center'>
+                <div className='card mx-5 mt-4'>
                   <div className='card-text'>
-                    <h5 className='card-header justify-content-center'>Most Recent Donations</h5>
-                    <ol>
+                    <h5 className='card-header justify-content-center'>Most Recent Donations <img src={donation} width='35' height='35' alt='donationimage'/></h5>
+                    <ol className='list-group list-group-flush'>
                     {this.state.pastWinners.length === 0 ? 'None Found!' :
                     <>
                     {this.state.pastWinners.map(winner => (
-                      <li key={winner.id}>
+                      <li className='list-group-item' key={winner.id}>
                         <p><b>Date: </b>{(new Date(parseInt(winner.returnValues.timestamp) * 1000)).toLocaleString()}</p>
                         <p><b>Charity: </b> {winner.returnValues.name}</p>
-                        <p><b>Donation Amount: </b> {this.state.web3.utils.fromWei(winner.returnValues.prize, 'Ether')} ETH <img src={ethlogo} width='25' height='25' alt='ethlogo'/> </p>
+                        <p className='row'><b className='mr-1'>Donation Amount: </b> {this.state.web3.utils.fromWei(winner.returnValues.prize, 'Ether')} ETH <img src={ethlogo} width='25' height='25' alt='ethlogo'/> </p>
                         <p className='text-muted'>Donation $ Amount:  
                           {(this.state.web3.utils.fromWei(winner.returnValues.prize, 'Ether') / this.state.ethPrice) > 1 ?
                             ' $' + this.state.web3.utils.fromWei(winner.returnValues.prize, 'Ether') / this.state.ethPrice : 
@@ -653,7 +660,6 @@ constructor(state) {
                           }
                         </p>
                         <p><b># of Votes: </b> {this.state.web3.utils.fromWei(winner.returnValues.votes, 'milliether')}</p>
-                        <hr />
                       </li>  
                     ))}
                     </>
@@ -665,18 +671,13 @@ constructor(state) {
             </div>
             
             
-            {(this.state.charities.length - this.state.currentCharities.length) % 3 !== 0 ? 
-            <><a id='showmore' href='#showmore' onClick={(e) => {
-              e.preventDefault()
-              this.showMoreCharities()
-            }}>Show More Charities</a></>
-            : null}
             
-
-          <div className='row justify-content-center mt-4'>
+            
+          <hr />
+          <footer className='row justify-content-center mt-4'>
             <p>Charity Pool Contract on Etherscan: </p>
             <a className='ml-3' href={`https://ropsten.etherscan.io/address/${this.state.poolContractAddress}`} target='_blank'>Etherscan</a>
-          </div>
+          </footer>
         </>
         
         }
