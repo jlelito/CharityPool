@@ -10,19 +10,25 @@
         "id": 1,
         "name": "Mercy Corps",
         "description": "Mercy Corps is a global non-governmental, humanitarian aid organization operating in transitional contexts that have undergone, or have been undergoing, various forms of economic, environmental, social and political instabilities.",
-        "image": null
+        "image": "mercy-corps"
     },
     {
         "id": 2,
         "name": "St Judes",
         "description": "St Jude Children's Research Hospital, founded in 1962, is a pediatric treatment and research facility focused on children's catastrophic diseases, particularly leukemia and other cancers. ",
-        "image": null
+        "image": "st-judes"
     },
     {
         "id": 3,
         "name": "Habitat for Humanity",
         "description": "Habitat for Humanity is a nonprofit organization that helps families build and improve places to call home. We believe affordable housing plays a critical role in strong and stable communities.",
         "image": "habitat"
+    },
+    {
+        "id": 4,
+        "name": "Feeding America",
+        "description": "Feeding America is a United States–based nonprofit organization that is a nationwide network of more than 200 food banks that feed more than 46 million people through food pantries, soup kitchens, shelters, and other community-based agencies",
+        "image": "feedingamerica"
     }
 ]
 }
