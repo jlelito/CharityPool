@@ -99,13 +99,37 @@ render() {
                                 width={50}>
                             </Loader>
                             : null
-                        }
+                          }
                     </label>
                     <label className='row justify-content-center'><p>Avaliable to Withdraw:<b className='text-success'> {this.props.web3.utils.fromWei(this.props.votingPower.toString(), 'Ether')} ETH</b></p>
                         <img src={ethlogo} width='25' height='25' alt='ethlogo'/>
+                        {this.props.trxStatus === 'Pending' && (
+                           this.props.action === 'Deposited ETH to Pool' 
+                        || this.props.action === 'Redeemed ETH from Pool' 
+                        || this.props.action === 'Added Votes to Charity' 
+                        || this.props.action === 'Removed Votes from Charity')  ? 
+                            <Loader 
+                                className='mt-1 ml-1'
+                                type='Oval'
+                                color='#00BFFF'
+                                height={50}
+                                width={50}>
+                            </Loader>
+                            : null
+                        }
                     </label>
                     <label className='row justify-content-center'><p>ETH Delegated <b className='text-danger'> {this.props.web3.utils.fromWei((this.props.depositedAmount - this.props.votingPower).toString(), 'Ether')} ETH</b></p>
                         <img src={ethlogo} width='25' height='25' alt='ethlogo'/>
+                        {this.props.trxStatus === 'Pending' && (this.props.action === 'Added Votes to Charity' || this.props.action === 'Removed Votes from Charity') ? 
+                            <Loader 
+                                className='mt-1 ml-1'
+                                type='Oval'
+                                color='#00BFFF'
+                                height={50}
+                                width={50}>
+                            </Loader>
+                            : null
+                        }
                     </label>
                     </>
                     : 'None Deposited!'}
