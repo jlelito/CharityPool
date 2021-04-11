@@ -25,7 +25,9 @@ render() {
                     <>
                     
                     
-                    <h5><b className='card-text'>Interest Amount: <p className='text-success'>{this.props.web3.utils.fromWei(this.props.poolInterest.toString(), 'Ether')} ETH</p></b></h5>
+                    <h5><b className='card-text'>Interest Amount: <p className='text-success'>{this.props.web3.utils.fromWei(this.props.poolInterest.toString(), 'Ether')} ETH
+                        <img src={ethlogo} className='mb-1' width='25' height='25' alt='ethlogo'/>
+                    </p></b></h5>
                     <h5><b>Interest $ Amount: <b className='text-success'>{this.calculateInterest()}</b></b></h5>
                     </>
                     }
