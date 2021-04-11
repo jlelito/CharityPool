@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Loader } from 'rimble-ui';
-import image from '../src_images/red-cross.jpg';
+import  ReactTextCollapse  from 'react-text-collapse';
 
 class CharityVote extends Component {
 
@@ -30,10 +30,22 @@ class CharityVote extends Component {
     }
 
     render() {
+        const TEXT_COLLAPSE_OPTIONS = {
+            collapse: false, // default state when component rendered
+            collapseText: '...show more', // text to show when collapsed
+            expandText: 'show less', // text to show when expanded
+            minHeight: 166, // component height when closed
+            maxHeight: 166, // expanded to
+            textStyle: { // pass the css for the collapseText and expandText here
+              color: "blue",
+              fontSize: "15px"
+            }
+          }
+
         return (
             <>
-                <div className='row justify-content-center my-3'>
-                    <form className='card'>
+                <div className='row ml-5 mt-4'>
+                    <form className='card' style={{height: "230px", width: "350px"}}>
                         <div className='card-header'>
                             <label className='mt-1'><b>{this.props.charity.name}</b></label>
                             <a className='ml-3 mt-1' href={`https://ropsten.etherscan.io/address/${this.props.charity.targetAddress}`} target='_blank'>Charity Address</a>
@@ -72,14 +84,16 @@ class CharityVote extends Component {
                             }}>
                                 Add Votes
                             </button>
+
                             <button id={'removevotes' + this.props.charity.id} className='btn btn-primary btn-sm mx-1 mt-1' type='button' disabled={this.props.myVote <= 0 || !this.props.isConnected} onClick={() => {
                                 this.props.removeVotes(this.props.charity.id, this.voteInput.value.toString())
                                 this.voteInput.value = null
                             }}>Remove Votes</button>
+                            
                             {this.props.myVote != 0 && this.props.myVote != null ?
                                 <a className='mt-2' onClick={() => this.voteInput.value = this.props.web3.utils.fromWei(this.props.myVote.toString(), 'milliether')}>Max</a>
                             : null}
-                            {this.props.web3 !== 'undefined' && this.props.web3 !== null ?
+                            {this.props.web3 !== 'undefined' && this.props.web3 !== null  && this.props.myVote !== undefined ?
                             <>
                             <div className='row justify-content-center mt-1'>Your Votes Delegated: {this.props.web3.utils.fromWei(this.props.myVote.toString(), 'milliether')}
                             {this.props.trxStatus === 'Pending' && 
@@ -99,18 +113,25 @@ class CharityVote extends Component {
                             : null}
                         </div>
                     </form>
-                    <div className='card w-25'>
+                    <div className='card' style={{height: "230px", width: "350px"}}>
                         <div className='card-body'>
-                            <p className='text-wrap'>{this.state.description}</p>   
+                        <>
+                        {this.state.description.length > 280 ? 
+                            <ReactTextCollapse options={TEXT_COLLAPSE_OPTIONS}>
+                                <p className='text-wrap'>{this.state.description}</p> 
+                            </ReactTextCollapse>
+                            : <p className='text-wrap'>{this.state.description}</p> 
+                        }
+                        </>
                         </div>         
                     </div>
-                    
                     {this.state.imageFound ? 
-                        <img src={require(`../src_images/${this.state.image}.jpg`)} alt={`../src_images/${this.state.image}.jpg`}/>
-                    :
+                        <img src={'./images/habitat.jpg'} alt={`../src_images/${this.state.image}.jpg`} width='250px' height='250px'/>
+                        :
                         <div className='row ml-3 mt-5'>No Image Found!</div>
                     }
                 </div>
+                
             </>
         );
     }

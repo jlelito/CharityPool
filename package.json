@@ -19,7 +19,9 @@
     "react-bootstrap": "^1.5.2",
     "react-dom": "^17.0.1",
     "react-loader-spinner": "^4.0.0",
+    "react-motion": "^0.5.2",
     "react-scripts": "4.0.2",
+    "react-text-collapse": "^0.5.2",
     "rimble-ui": "^0.14.0",
     "styled-components": "^5.2.1",
     "truffle-hdwallet-provider": "^1.0.17",
@@ -30,7 +32,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
