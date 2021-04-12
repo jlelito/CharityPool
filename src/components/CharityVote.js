@@ -45,13 +45,15 @@ class CharityVote extends Component {
         return (
             <>
                 <div className='row ml-5 mt-4'>
-                    <form className='card' style={{height: "230px", width: "350px"}}>
+                    <form className='card' style={{height: "240px", width: "320px"}}>
                         <div className='card-header'>
-                            <label className='mt-1'><b>{this.props.charity.name}</b></label>
-                            <a className='ml-3 mt-1' href={`https://ropsten.etherscan.io/address/${this.props.charity.targetAddress}`} target='_blank'>Charity Address</a>
+                        <div className='row justify-content-center'>
+                            <h5 className='mt-1'>{this.props.charity.name}</h5>
+                        </div>
+                            <a className='row justify-content-center' href={`https://ropsten.etherscan.io/address/${this.props.charity.targetAddress}`} target='_blank'>Charity Address</a>
                         </div>
                         <div className='card-body'> 
-                            <div className='row justify-content-center mt-1 text-success'>Total Votes: {this.props.web3.utils.fromWei(this.props.charity.votes.toString(), 'milliether')}
+                            <div className='row justify-content-center text-success'>Total Votes: {this.props.web3.utils.fromWei(this.props.charity.votes.toString(), 'milliether')}
                             {this.props.trxStatus === 'Pending' && 
                             this.props.charityTarget === this.props.charity.id &&
                             (this.props.action === 'Added Votes to Charity' 
@@ -65,9 +67,10 @@ class CharityVote extends Component {
                                 </Loader> 
                             : null}
                             </div>
-                            <input 
+                            <div className='row justify-content-center'>
+                            <input
                                 type='number' 
-                                className='form-control mx-2 col' 
+                                className='form-control mx-2 col-8' 
                                 placeholder='0' 
                                 min='1' 
                                 step='1'
@@ -75,6 +78,7 @@ class CharityVote extends Component {
                                 disabled={!this.props.isConnected || this.props.votingPower === 0}
                                 required 
                             />
+                            </div>
                             {this.props.votingPower != 0 && this.props.votingPower != null ? 
                                 <a className='mt-2' onClick={() => this.voteInput.value = this.props.web3.utils.fromWei(this.props.votingPower, 'milliether')}>Max</a>
                             : null}
@@ -113,7 +117,7 @@ class CharityVote extends Component {
                             : null}
                         </div>
                     </form>
-                    <div className='card' style={{height: "230px", width: "350px"}}>
+                    <div className='card' style={{height: "240px", width: "320px"}}>
                         <div className='card-body'>
                         <>
                         {this.state.description.length > 280 ? 
@@ -126,7 +130,7 @@ class CharityVote extends Component {
                         </div>         
                     </div>
                     {this.state.imageFound ? 
-                    <div className='card' style={{height: "230px", width: "350px"}}>
+                    <div className='card' style={{height: "240px", width: "320px"}}>
                         <img src={`./images/${this.state.image}`} alt={this.state.image} style={{height: "250px", width: "250px"}}/>
                         </div>
                         :
