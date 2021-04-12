@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/CharityPool/static/css/main.d058e95b.chunk.css",
-    "main.js": "/CharityPool/static/js/main.01f2ea0f.chunk.js",
-    "main.js.map": "/CharityPool/static/js/main.01f2ea0f.chunk.js.map",
+    "main.js": "/CharityPool/static/js/main.ad303f48.chunk.js",
+    "main.js.map": "/CharityPool/static/js/main.ad303f48.chunk.js.map",
     "runtime-main.js": "/CharityPool/static/js/runtime-main.c0cf6c09.js",
     "runtime-main.js.map": "/CharityPool/static/js/runtime-main.c0cf6c09.js.map",
     "static/css/2.150d169a.chunk.css": "/CharityPool/static/css/2.150d169a.chunk.css",
@@ -16,6 +16,7 @@
     "static/media/checkmark.bd5b95a7.png": "/CharityPool/static/media/checkmark.bd5b95a7.png",
     "static/media/donation.92566bb2.png": "/CharityPool/static/media/donation.92566bb2.png",
     "static/media/eth-diamond-rainbow.bd39f017.png": "/CharityPool/static/media/eth-diamond-rainbow.bd39f017.png",
+    "static/media/vote.547ef54a.png": "/CharityPool/static/media/vote.547ef54a.png",
     "static/media/xmark.50094963.png": "/CharityPool/static/media/xmark.50094963.png"
   },
   "entrypoints": [
@@ -23,6 +24,6 @@
     "static/css/2.150d169a.chunk.css",
     "static/js/2.be486d37.chunk.js",
     "static/css/main.d058e95b.chunk.css",
-    "static/js/main.01f2ea0f.chunk.js"
+    "static/js/main.ad303f48.chunk.js"
   ]
 }
