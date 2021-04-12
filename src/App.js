@@ -14,6 +14,7 @@ import CharityData from './CharityData.json';
 import magnify from './src_images/magnify.png';
 import ethlogo from './src_images/ETH.png';
 import donation from './src_images/donation.png';
+import vote from './src_images/vote.png';
 import { Loader } from 'rimble-ui';
 
 class App extends Component {
@@ -507,6 +508,7 @@ constructor(state) {
                 currentEthBalance = {this.state.currentEthBalance}
                 votingPower={this.state.votingPower}
                 poolInterest={this.state.poolInterest}
+                poolETHDeposited={this.state.poolETHDeposited}
                 ethPrice={this.state.ethPrice}
                 isConnected={this.state.isConnected}
                 trxStatus={this.state.trxStatus}
@@ -516,46 +518,39 @@ constructor(state) {
             
             &nbsp;
             <hr/>
-            <h2 id='charityVote'>Vote for Charities</h2>
+            <div className='row justify-content-center mb-3'>
+              <h2 id='charityVote'>Vote for Charities</h2>
+              <img src={vote} className='ml-1 mt-2' height='30px' width='30px' alt='votelogo'/>
+            </div>
             {this.state.isConnected ?
-            <>
-            {this.state.votingPower === 0 ? 
               <>
-                <p className='text-danger'><b>No Voting Power!</b></p>
-                <p><b>Your Votes Delegated: {this.state.web3.utils.fromWei((this.state.depositedAmount - this.state.votingPower).toString(), 'milliether')} Votes</b></p>
-              </>
-            : 
-              <>
-              <div className='row justify-content-center'>
-                <p className='text-success'><b>Your Voting Power: {this.state.web3.utils.fromWei(this.state.votingPower.toString(), 'milliether')} Votes</b></p>
-                {this.state.trxStatus === 'Pending' && (this.state.action === 'Added Votes to Charity' || this.state.action === 'Removed Votes from Charity') ? 
-                  <Loader 
-                      className='mt-2 ml-1'
-                      type='Oval'
-                      color='#00BFFF'
-                      height={50}
-                      width={50}>
-                  </Loader>
-                  : null
-                }
-              </div>
-              <div className='row justify-content-center'>
-                <p><b>Your Votes Delegated: {this.state.web3.utils.fromWei((this.state.depositedAmount - this.state.votingPower).toString(), 'milliether')} Votes</b></p>
-                {this.state.trxStatus === 'Pending' && (this.state.action === 'Added Votes to Charity' || this.state.action === 'Removed Votes from Charity') ? 
-                  <Loader 
-                      className='mt-2 ml-1'
-                      type='Oval'
-                      color='#00BFFF'
-                      height={50}
-                      width={50}>
-                  </Loader>
-                  : null
-                }
+                <div className='row justify-content-center'>
+                  <p className='text-success'><b>Your Voting Power: {this.state.web3.utils.fromWei(this.state.votingPower.toString(), 'milliether')} Votes</b></p>
+                  {this.state.trxStatus === 'Pending' && (this.state.action === 'Added Votes to Charity' || this.state.action === 'Removed Votes from Charity') ? 
+                    <Loader 
+                        className='mt-2 ml-1'
+                        type='Oval'
+                        color='#00BFFF'
+                        height={50}
+                        width={50}>
+                    </Loader>
+                    : null
+                  }
                 </div>
-
+                <div className='row justify-content-center'>
+                  <p><b>Your Votes Delegated: {this.state.web3.utils.fromWei((this.state.depositedAmount - this.state.votingPower).toString(), 'milliether')} Votes</b></p>
+                  {this.state.trxStatus === 'Pending' && (this.state.action === 'Added Votes to Charity' || this.state.action === 'Removed Votes from Charity') ? 
+                    <Loader 
+                        className='mt-2 ml-1'
+                        type='Oval'
+                        color='#00BFFF'
+                        height={50}
+                        width={50}>
+                    </Loader>
+                    : null
+                  }
+                </div>
               </>
-            }
-            </>
             :  null}
             <div className='row justify-content-center'>
               <div className='col-auto' className='text-muted small mr-2'>
@@ -666,14 +661,7 @@ constructor(state) {
             
           <hr />
           
-          {this.state.web3 !== null && this.state.web3 !== undefined ?
-          <>
-          <div className='row justify-content-center'>
-            <h5 className='mt-5'>ETH Deposited to Contract: {this.state.web3.utils.fromWei(this.state.poolETHDeposited)} ETH</h5>
-            <img src={ethlogo} className='mt-5' width='30' height='30' alt='ethlogo'/>
-          </div>
-          </>
-          : null}
+          
           <footer className='row justify-content-center mt-4'>
             <p>Charity Pool Contract on Etherscan: </p>
             <a className='ml-3' href={`https://ropsten.etherscan.io/address/${this.state.poolContractAddress}`} target='_blank'>Etherscan</a>
