@@ -21,8 +21,15 @@ render() {
                     <h3>Deposit/Withdraw from Charity Pool</h3>
                 </div>
                 <div className='card-body'>
-                    {this.props.web3 === null ? null : 
+                    {this.props.web3 === null || this.props.web3 === undefined ? null : 
                     <>
+
+
+                    <div className='row justify-content-center'>
+                        <h5>ETH Deposited to Contract: <b className='text-primary'>{this.props.web3.utils.fromWei(this.props.poolETHDeposited.toString())} ETH</b></h5>
+                        <img src={ethlogo} width='25' height='25' alt='ethlogo'/>
+                    </div>
+
                     
                     
                     <h5><b className='card-text'>Interest Amount: <p className='text-success'>{this.props.web3.utils.fromWei(this.props.poolInterest.toString(), 'Ether')} ETH
