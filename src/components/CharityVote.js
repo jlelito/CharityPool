@@ -126,7 +126,9 @@ class CharityVote extends Component {
                         </div>         
                     </div>
                     {this.state.imageFound ? 
-                        <img src={'./images/habitat.jpg'} alt={`../src_images/${this.state.image}.jpg`} width='250px' height='250px'/>
+                    <div className='card' style={{height: "230px", width: "350px"}}>
+                        <img src={`./images/${this.state.image}`} alt={this.state.image} style={{height: "250px", width: "250px"}}/>
+                        </div>
                         :
                         <div className='row ml-3 mt-5'>No Image Found!</div>
                     }
