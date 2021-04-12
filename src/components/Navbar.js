@@ -78,7 +78,7 @@ class Navbar extends Component {
                   />
                   : null
                 }
-                <div className='text-white mx-2 my-2'>Ropsten Faucet: <a href='https://faucet.ropsten.be/' target='_blank' rel='noopener noreferrer'>Faucet</a></div>
+                <div className='text-white mx-2 my-2'>Test ETH Faucet: <a href='https://faucet.ropsten.be/' target='_blank' rel='noopener noreferrer'>Faucet</a></div>
               </> 
               : 
               <span></span>
