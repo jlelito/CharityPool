@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
-class WhitelistForm extends Component {
-
+  /* Form Component for Creating Charities in the pool */
+class CreateCharity extends Component {
     render() {
         return (
             <>
@@ -15,22 +15,22 @@ class WhitelistForm extends Component {
               this.props.poolCreateCharity(charityName, targetAddress)
             }}>
               <div className='row justify-content-center'>
-              <input 
-                  type='text' 
-                  className='form-control mx-2 col-4' 
-                  placeholder='Charity Name' 
-                  ref={(charityName) => { this.charityName = charityName }}
-                  disabled={this.props.isConnected}
-                  required 
-              />
-              <input 
-                  type='text' 
-                  className='form-control mx-2 col-4' 
-                  placeholder='Charity Address' 
-                  ref={(targetAddress) => { this.targetAddress = targetAddress }}
-                  disabled={this.props.isConnected}
-                  required 
-              />
+                <input 
+                    type='text' 
+                    className='form-control mx-2 col-4' 
+                    placeholder='Charity Name' 
+                    ref={(charityName) => { this.charityName = charityName }}
+                    disabled={this.props.isConnected}
+                    required 
+                />
+                <input 
+                    type='text' 
+                    className='form-control mx-2 col-4' 
+                    placeholder='Charity Address' 
+                    ref={(targetAddress) => { this.targetAddress = targetAddress }}
+                    disabled={this.props.isConnected}
+                    required 
+                />
               </div>
               <div className='row justify-content-center'>
                   <button className='btn btn-primary mt-3' type='submit'>Create</button>
@@ -41,4 +41,4 @@ class WhitelistForm extends Component {
     }
   }
 
-  export default WhitelistForm;
+  export default CreateCharity;

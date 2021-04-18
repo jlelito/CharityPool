@@ -5,6 +5,8 @@ import Web3 from 'web3';
 import Navbar from './components/Navbar.js';
 import Notification from './components/Notification.js';
 import Loading from './components/Loading.js';
+import Conversion from './components/Conversion.js';
+import CharityWinners from './components/CharityWinners.js';
 import ConnectionBanner from '@rimble/connection-banner';
 import cETH from './abis/cETHRopstenABI.json';
 import Pool from './components/Pool.js';
@@ -12,22 +14,22 @@ import CharityVote from './components/CharityVote.js';
 import CreateCharity from './components/CreateCharity.js';
 import CharityData from './CharityData.json';
 import magnify from './src_images/magnify.png';
-import ethlogo from './src_images/ETH.png';
-import donation from './src_images/donation.png';
 import vote from './src_images/vote.png';
 import { Loader } from 'rimble-ui';
 
+/*Main App Component */
 class App extends Component {
 
   async componentDidMount() {
-    await this.loadBlockchainData()
-    
+    await this.loadBlockchainData()  
   }
 
+  //First initial load when the user opens the application
   async loadBlockchainData() {
     this.setState({loading: true})
     let web3
     
+    //Check if the user has Metamask
     if(typeof window.ethereum !== 'undefined') {
       web3 = new Web3(window.ethereum)
       await this.setState({web3})
@@ -62,7 +64,8 @@ class App extends Component {
     } else {
       await this.setState({account: null, isConnected: false})
     }
-  
+
+    //Getting the network
     const networkId = await web3.eth.net.getId()
     this.setState({network: networkId})
   
@@ -92,7 +95,6 @@ async loadContractData() {
   await this.setState({cETHContract, cETHAddress: compoundCETHContractAddress})
   let cETHBalance = await this.state.cETHContract.methods.balanceOf(this.state.poolContractAddress).call()
   this.setState({contractCETHBalance: cETHBalance})
-
 }
 
 async loadPoolData() {
@@ -101,11 +103,12 @@ async loadPoolData() {
   let currentCharity, currentVote, votingPower, nextId, accountDepositedAmount, poolETHDeposited, poolBalanceUnderlying, poolInterest
 
   nextId = await this.state.poolContract.methods.nextId().call()
-
+  //Getting the charities
   for(let i=0; i<nextId; i++){
     currentCharity = await this.state.poolContract.methods.charities(i).call()
     charities.push(currentCharity)
 
+    //Getting the users votes for charities
     if (this.state.account !== 'undefined' && this.state.account !== null) {
       currentVote = await this.state.poolContract.methods.votes(this.state.account, i).call()
       myVotes.push(currentVote)
@@ -123,7 +126,8 @@ async loadPoolData() {
     accountDepositedAmount = 0
     votingPower = 0
   }
-  
+
+  //Getting the balance data for the pool
   await this.setState({depositedAmount: accountDepositedAmount, votingPower})
   poolBalanceUnderlying = await this.state.cETHContract.methods.balanceOfUnderlying(this.state.poolContractAddress).call()
   poolETHDeposited = await this.state.poolContract.methods.ethDeposited().call()
@@ -141,30 +145,30 @@ poolDeposit = (amount) => {
   this.setState({amount: amount})
   amount = this.state.web3.utils.toHex(this.state.web3.utils.toWei(amount, 'ether'))
   try {
-    this.state.poolContract.methods.deposit(this.state.cETHAddress).send({ from: this.state.account, value: amount}).on('transactionHash', async (hash) => {
-       this.setState({hash: hash, action: 'Deposited ETH to Pool', trxStatus: 'Pending', confirmNum: 0})
-       this.showNotification()
+      this.state.poolContract.methods.deposit(this.state.cETHAddress).send({ from: this.state.account, value: amount}).on('transactionHash', async (hash) => {
+        this.setState({hash: hash, action: 'Deposited ETH to Pool', trxStatus: 'Pending', confirmNum: 0})
+        this.showNotification()
 
-      }).on('receipt', async (receipt) => {
-          await this.loadAccountData()
-          await this.loadContractData()
-          await this.loadPoolData()
+        }).on('receipt', async (receipt) => {
+            await this.loadAccountData()
+            await this.loadContractData()
+            await this.loadPoolData()
 
-          if(receipt.status === true){
-            this.setState({trxStatus: 'Success'})
-          }
-          else if(receipt.status === false){
-            this.setState({trxStatus: 'Failed'})
-          }
-      }).on('error', (error) => {
-          window.alert('Error! Could not Supply ETH!')
-      }).on('confirmation', (confirmNum) => {
-          if(confirmNum > 10) {
-            this.setState({confirmNum : '10+'})
-          } else {
-          this.setState({confirmNum})
-          }
-      })
+            if(receipt.status === true){
+              this.setState({trxStatus: 'Success'})
+            }
+            else if(receipt.status === false){
+              this.setState({trxStatus: 'Failed'})
+            }
+        }).on('error', (error) => {
+            window.alert('Error! Could not Supply ETH!')
+        }).on('confirmation', (confirmNum) => {
+            if(confirmNum > 10) {
+              this.setState({confirmNum : '10+'})
+            } else {
+            this.setState({confirmNum})
+            }
+        })
     }
     catch(e) {
       window.alert(e)
@@ -176,173 +180,175 @@ poolWithdraw = (amount) => {
   this.setState({amount: amount})
   amount = this.state.web3.utils.toHex(this.state.web3.utils.toWei(amount, 'ether'))
   try {
-    this.state.poolContract.methods.withdraw(amount, this.state.cETHAddress).send({ from: this.state.account }).on('transactionHash', async (hash) => {
-       this.setState({hash: hash, action: 'Redeemed ETH from Pool', trxStatus: 'Pending', confirmNum: 0})
-       this.showNotification()
+      this.state.poolContract.methods.withdraw(amount, this.state.cETHAddress).send({ from: this.state.account }).on('transactionHash', async (hash) => {
+        this.setState({hash: hash, action: 'Redeemed ETH from Pool', trxStatus: 'Pending', confirmNum: 0})
+        this.showNotification()
 
-      }).on('receipt', async (receipt) => {
-          await this.loadAccountData()
-          await this.loadContractData()
-          await this.loadPoolData()
+        }).on('receipt', async (receipt) => {
+            await this.loadAccountData()
+            await this.loadContractData()
+            await this.loadPoolData()
 
-          if(receipt.status === true){
-            this.setState({trxStatus: 'Success'})
-          }
-          else if(receipt.status === false){
-            this.setState({trxStatus: 'Failed'})
-          }
-      }).on('error', (error) => {
-          window.alert('Error! Could not Redeem ETH!')
-      }).on('confirmation', (confirmNum) => {
-          if(confirmNum > 10) {
-            this.setState({confirmNum : '10+'})
-          } else {
-          this.setState({confirmNum})
-          }
-      })
+            if(receipt.status === true){
+              this.setState({trxStatus: 'Success'})
+            }
+            else if(receipt.status === false){
+              this.setState({trxStatus: 'Failed'})
+            }
+        }).on('error', (error) => {
+            window.alert('Error! Could not Redeem ETH!')
+        }).on('confirmation', (confirmNum) => {
+            if(confirmNum > 10) {
+              this.setState({confirmNum : '10+'})
+            } else {
+            this.setState({confirmNum})
+            }
+        })
     }
     catch(e) {
       window.alert(e)
     }
 }
 
-
+//Create a charity in the pool
 poolCreateCharity = (name, address) => {
   try {
-    this.state.poolContract.methods.createCharity(name, address).send({ from: this.state.account }).on('transactionHash', async (hash) => {
-       this.setState({hash: hash, action: 'Created Charity', trxStatus: 'Pending', confirmNum: 0})
-       this.showNotification()
+      this.state.poolContract.methods.createCharity(name, address).send({ from: this.state.account }).on('transactionHash', async (hash) => {
+        this.setState({hash: hash, action: 'Created Charity', trxStatus: 'Pending', confirmNum: 0})
+        this.showNotification()
 
-      }).on('receipt', async (receipt) => {
-          await this.loadAccountData()
-          await this.loadContractData()
-          await this.loadPoolData()
+        }).on('receipt', async (receipt) => {
+            await this.loadAccountData()
+            await this.loadContractData()
+            await this.loadPoolData()
 
-          if(receipt.status === true){
-            this.setState({trxStatus: 'Success'})
-          }
-          else if(receipt.status === false){
-            this.setState({trxStatus: 'Failed'})
-          }
-      }).on('error', (error) => {
-          window.alert('Error! Could not create charity!')
-      }).on('confirmation', (confirmNum) => {
-          if(confirmNum > 10) {
-            this.setState({confirmNum : '10+'})
-          } else {
-          this.setState({confirmNum})
-          }
-      })
+            if(receipt.status === true){
+              this.setState({trxStatus: 'Success'})
+            }
+            else if(receipt.status === false){
+              this.setState({trxStatus: 'Failed'})
+            }
+        }).on('error', (error) => {
+            window.alert('Error! Could not create charity!')
+        }).on('confirmation', (confirmNum) => {
+            if(confirmNum > 10) {
+              this.setState({confirmNum : '10+'})
+            } else {
+            this.setState({confirmNum})
+            }
+        })
     }
     catch(e) {
       window.alert(e)
     }
 }
 
-
+//Add votes to a pool
 addVotes = (id, voteAmount) => {
   this.setState({charityTarget: id, amount: voteAmount})
   voteAmount = this.state.web3.utils.toWei(voteAmount, 'milliether')
   try {
-    this.state.poolContract.methods.addVotes(id, voteAmount).send({ from: this.state.account }).on('transactionHash', async (hash) => {
-       this.setState({hash: hash, action: 'Added Votes to Charity', trxStatus: 'Pending', confirmNum: 0})
-       this.showNotification()
+      this.state.poolContract.methods.addVotes(id, voteAmount).send({ from: this.state.account }).on('transactionHash', async (hash) => {
+        this.setState({hash: hash, action: 'Added Votes to Charity', trxStatus: 'Pending', confirmNum: 0})
+        this.showNotification()
 
-      }).on('receipt', async (receipt) => {
-          await this.loadAccountData()
-          await this.loadContractData()
-          await this.loadPoolData()
-          this.sortCharities()
+        }).on('receipt', async (receipt) => {
+            await this.loadAccountData()
+            await this.loadContractData()
+            await this.loadPoolData()
+            this.sortCharities()
 
-          if(receipt.status === true){
-            this.setState({trxStatus: 'Success'})
-          }
-          else if(receipt.status === false){
-            this.setState({trxStatus: 'Failed'})
-          }
-      }).on('error', (error) => {
-          window.alert('Error! Could not add votes to charity!')
-      }).on('confirmation', (confirmNum) => {
-          if(confirmNum > 10) {
-            this.setState({confirmNum : '10+'})
-          } else {
-          this.setState({confirmNum})
-          }
-      })
+            if(receipt.status === true){
+              this.setState({trxStatus: 'Success'})
+            }
+            else if(receipt.status === false){
+              this.setState({trxStatus: 'Failed'})
+            }
+        }).on('error', (error) => {
+            window.alert('Error! Could not add votes to charity!')
+        }).on('confirmation', (confirmNum) => {
+            if(confirmNum > 10) {
+              this.setState({confirmNum : '10+'})
+            } else {
+            this.setState({confirmNum})
+            }
+        })
     }
     catch(e) {
       window.alert(e)
     }
 }
 
+//Remove votes to a pool
 removeVotes = (id, voteAmount) => {
   this.setState({charityTarget: id, amount: voteAmount})
   voteAmount = this.state.web3.utils.toWei(voteAmount, 'milliether')
   try {
-    this.state.poolContract.methods.removeVotes(id, voteAmount).send({ from: this.state.account }).on('transactionHash', async (hash) => {
-       this.setState({hash: hash, action: 'Removed Votes from Charity', trxStatus: 'Pending', confirmNum: 0})
-       this.showNotification()
+      this.state.poolContract.methods.removeVotes(id, voteAmount).send({ from: this.state.account }).on('transactionHash', async (hash) => {
+        this.setState({hash: hash, action: 'Removed Votes from Charity', trxStatus: 'Pending', confirmNum: 0})
+        this.showNotification()
 
-      }).on('receipt', async (receipt) => {
-          await this.loadAccountData()
-          await this.loadContractData()
-          await this.loadPoolData()
-          this.sortCharities()
+        }).on('receipt', async (receipt) => {
+            await this.loadAccountData()
+            await this.loadContractData()
+            await this.loadPoolData()
+            this.sortCharities()
 
-          if(receipt.status === true){
-            this.setState({trxStatus: 'Success'})
-          }
-          else if(receipt.status === false){
-            this.setState({trxStatus: 'Failed'})
-          }
-      }).on('error', (error) => {
-          window.alert('Error! Could not remove votes from charity!')
-      }).on('confirmation', (confirmNum) => {
-          if(confirmNum > 10) {
-            this.setState({confirmNum : '10+'})
-          } else {
-          this.setState({confirmNum})
-          }
-      })
+            if(receipt.status === true){
+              this.setState({trxStatus: 'Success'})
+            }
+            else if(receipt.status === false){
+              this.setState({trxStatus: 'Failed'})
+            }
+        }).on('error', (error) => {
+            window.alert('Error! Could not remove votes from charity!')
+        }).on('confirmation', (confirmNum) => {
+            if(confirmNum > 10) {
+              this.setState({confirmNum : '10+'})
+            } else {
+            this.setState({confirmNum})
+            }
+        })
     }
     catch(e) {
       window.alert(e)
     }
 }
 
+//Releases the prize to the charity with the most votes
 releasePrize = () => {
   try {
-    this.state.poolContract.methods.releasePrizeTarget(this.state.cETHAddress).send({ from: this.state.account }).on('transactionHash', async (hash) => {
-       this.setState({hash: hash, action: 'Released Prize', trxStatus: 'Pending', confirmNum: 0})
-       this.showNotification()
+      this.state.poolContract.methods.releasePrizeTarget(this.state.cETHAddress).send({ from: this.state.account }).on('transactionHash', async (hash) => {
+        this.setState({hash: hash, action: 'Released Prize', trxStatus: 'Pending', confirmNum: 0})
+        this.showNotification()
 
-      }).on('receipt', async (receipt) => {
-          await this.loadAccountData()
-          await this.loadContractData()
-          await this.loadPoolData()
+        }).on('receipt', async (receipt) => {
+            await this.loadAccountData()
+            await this.loadContractData()
+            await this.loadPoolData()
 
-          if(receipt.status === true){
-            this.setState({trxStatus: 'Success'})
-          }
-          else if(receipt.status === false){
-            this.setState({trxStatus: 'Failed'})
-          }
-      }).on('error', (error) => {
-          window.alert('Error! Could not release prize!!')
-      }).on('confirmation', (confirmNum) => {
-          if(confirmNum > 10) {
-            this.setState({confirmNum : '10+'})
-          } else {
-          this.setState({confirmNum})
-          }
-      })
+            if(receipt.status === true){
+              this.setState({trxStatus: 'Success'})
+            }
+            else if(receipt.status === false){
+              this.setState({trxStatus: 'Failed'})
+            }
+        }).on('error', (error) => {
+            window.alert('Error! Could not release prize!!')
+        }).on('confirmation', (confirmNum) => {
+            if(confirmNum > 10) {
+              this.setState({confirmNum : '10+'})
+            } else {
+            this.setState({confirmNum})
+            }
+        })
     }
     catch(e) {
       window.alert(e)
     }
 }
 
-
+//Sorts the charities from most votes to least votes
 sortCharities = () => {
   let sortedCharities = this.state.charities.sort(function(a,b){
     return b.votes - a.votes
@@ -350,21 +356,24 @@ sortCharities = () => {
   this.setState({sortedCharities})
 }
 
-
+//Search function for charity searchbar
 searchCharities = (searchInput) => {
   console.log(this.state.charities)
   let filteredCharities = this.state.charities.filter(charity => charity.name.toLowerCase().includes(searchInput.toLowerCase()))
   this.setState({currentCharities: filteredCharities})
 }
 
+//Shows more charities
 showMoreCharities = () => {
   this.setState({currentCharities: this.state.charities.slice(0, this.state.currentCharities.length+3)})
 }
 
+//Shows notification
 showNotification = () => {
   this.notificationOne.current.updateShowNotify()
 }
 
+//Calculates the $ amount of the interest
 calculateInterest() {
   let result
   result = this.state.web3.utils.fromWei(this.state.poolInterest.toString(), 'Ether') / this.state.ethPrice
@@ -374,6 +383,7 @@ calculateInterest() {
   return result
 }
 
+//Gets the ETH price from Coingecko API
 async getETHPrice()  {
   const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd')
   const myJson = await response.json()
@@ -420,10 +430,12 @@ constructor(state) {
 
     if(window.ethereum != null) {
 
+      //Reload page if network is changed
       window.ethereum.on('chainChanged', async (chainId) => {
         window.location.reload()
       })
   
+      //Update user data when accounts changed
       window.ethereum.on('accountsChanged', async (accounts) => {
         if(typeof accounts[0] !== 'undefined' & accounts[0] !== null) {
           await this.loadAccountData()
@@ -483,17 +495,16 @@ constructor(state) {
           
           <p>You can withdraw ETH that is not delegated at any time!</p>
           {this.state.admin === this.state.account ? 
-          <>
-
-          <h2 className='mt-2'>Create Charities</h2>  
-            <CreateCharity 
-              poolCreateCharity={this.poolCreateCharity}
-            />
-            <h5 className='mt-5'>Release Prize!</h5>
-            <button className='btn btn-primary mt-2' onClick={() => this.releasePrize()}>Release Prize!</button>
-          </>
-          : null
-
+            <>
+              <h2 className='mt-2'>Create Charities</h2>  
+              <CreateCharity 
+                poolCreateCharity={this.poolCreateCharity}
+              />
+              <h5 className='mt-5'>Release Prize!</h5>
+              <button className='btn btn-primary mt-2' onClick={() => this.releasePrize()}>Release Prize!</button>
+            </>
+            : 
+            null
           }
 
           
@@ -552,22 +563,8 @@ constructor(state) {
                 </div>
               </>
             :  null}
-            <div className='row justify-content-center'>
-              <div className='col-auto' className='text-muted small mr-2'>
-                Conversion Rate: 
-              </div>
-              <div className='col-auto float-left'>
-                <div className='row justify-content-center'>
-                  <p className='text-muted small'>.001 ETH = 1 Vote</p>
-                  <p className='text-muted small ml-3'>.01 ETH = 10 Votes</p>
-                </div>
-                <div className='row justify-content-center'>
-                  <p className='text-muted small'>.1 ETH = 100 Votes</p>
-                  <p className='text-muted small ml-3'>1 ETH = 1000 Votes</p>
-                </div>
-              </div>
-            </div>
-            
+
+            <Conversion />
 
             <form className='row justify-content-center mt-3'>
               <div className='col-auto'>
@@ -597,70 +594,43 @@ constructor(state) {
             
             <div className='row'>
               <div className='col-8'>
-              {this.state.currentCharities.length === 0 ? <h3 className='mt-4'>No Charities Found!</h3> : 
-                <>
-                  {this.state.currentCharities.map(charity => (
-                    <CharityVote
-                      key={charity.id}
-                      web3={this.state.web3}
-                      isConnected={this.state.isConnected}
-                      depositedAmount={this.state.depositedAmount}
-                      myVote={this.state.myVotes[charity.id]}
-                      charity={charity}
-                      addVotes={this.addVotes}
-                      removeVotes={this.removeVotes}
-                      votingPower={this.state.votingPower}
-                      charityDataState = {this.state.charityDataState}
-                      trxStatus={this.state.trxStatus}
-                      action={this.state.action}
-                      charityTarget={this.state.charityTarget}
-                    />   
-                  ))
-                  }
-                </>
-              }
-              {(this.state.charities.length - this.state.currentCharities.length) % 3 !== 0 ? 
-            <><a id='showmore' href='#showmore' onClick={(e) => {
-              e.preventDefault()
-              this.showMoreCharities()
-            }}>Show More Charities</a></>
-            : null}
-              </div>
-
-              <div className='col-sm-4 float-right justify-content-center'>
-                <div className='card mx-5 mt-4'>
-                  <div className='card-text'>
-                    <h5 className='card-header justify-content-center'>Most Recent Donations <img src={donation} width='35' height='35' alt='donationimage'/></h5>
-                    <ol className='list-group list-group-flush'>
-                    {this.state.pastWinners.length === 0 ? 'None Found!' :
-                    <>
-                    {this.state.pastWinners.map(winner => (
-                      <li className='list-group-item' key={winner.id}>
-                        <p><b>Date: </b>{(new Date(parseInt(winner.returnValues.timestamp) * 1000)).toLocaleString()}</p>
-                        <p><b>Charity: </b> {winner.returnValues.name}</p>
-                        <p className='row'><b className='mr-1'>Donation Amount: </b> {this.state.web3.utils.fromWei(winner.returnValues.prize, 'Ether')} ETH <img src={ethlogo} width='25' height='25' alt='ethlogo'/> </p>
-                        <p className='text-muted'>Donation $ Amount:  
-                          {(this.state.web3.utils.fromWei(winner.returnValues.prize, 'Ether') / this.state.ethPrice) > 1 ?
-                            ' $' + this.state.web3.utils.fromWei(winner.returnValues.prize, 'Ether') / this.state.ethPrice : 
-                            ' Less Than $1'
-                          }
-                        </p>
-                        <p><b># of Votes: </b> {this.state.web3.utils.fromWei(winner.returnValues.votes, 'milliether')}</p>
-                      </li>  
-                    ))}
-                    </>
+                {this.state.currentCharities.length === 0 ? <h3 className='mt-4'>No Charities Found!</h3> : 
+                  <>
+                    {this.state.currentCharities.map(charity => (
+                      <CharityVote
+                        key={charity.id}
+                        web3={this.state.web3}
+                        isConnected={this.state.isConnected}
+                        depositedAmount={this.state.depositedAmount}
+                        myVote={this.state.myVotes[charity.id]}
+                        charity={charity}
+                        addVotes={this.addVotes}
+                        removeVotes={this.removeVotes}
+                        votingPower={this.state.votingPower}
+                        charityDataState = {this.state.charityDataState}
+                        trxStatus={this.state.trxStatus}
+                        action={this.state.action}
+                        charityTarget={this.state.charityTarget}
+                      />   
+                    ))
                     }
-                    </ol>
-                  </div>
-                </div>
+                  </>
+                }
+                {(this.state.charities.length - this.state.currentCharities.length) % 3 !== 0 ? 
+                  <><a id='showmore' className='mt-2' href='#showmore' onClick={(e) => {
+                    e.preventDefault()
+                    this.showMoreCharities()
+                  }}>Show More Charities</a></>
+                  : null
+                }
               </div>
+                <CharityWinners
+                  web3={this.state.web3}
+                  pastWinners={this.state.pastWinners}
+                  ethPrice={this.state.ethPrice}
+                />
             </div>
-            
-            
-            
-            
-          <hr />
-          
+          <hr /> 
           
           <footer className='row justify-content-center mt-4'>
             <p>Charity Pool Contract on Etherscan: </p>
