@@ -1,17 +1,17 @@
 {
   "files": {
     "main.css": "/CharityPool/static/css/main.d058e95b.chunk.css",
-    "main.js": "/CharityPool/static/js/main.de294b1f.chunk.js",
-    "main.js.map": "/CharityPool/static/js/main.de294b1f.chunk.js.map",
+    "main.js": "/CharityPool/static/js/main.c80ec925.chunk.js",
+    "main.js.map": "/CharityPool/static/js/main.c80ec925.chunk.js.map",
     "runtime-main.js": "/CharityPool/static/js/runtime-main.c0cf6c09.js",
     "runtime-main.js.map": "/CharityPool/static/js/runtime-main.c0cf6c09.js.map",
     "static/css/2.150d169a.chunk.css": "/CharityPool/static/css/2.150d169a.chunk.css",
-    "static/js/2.be486d37.chunk.js": "/CharityPool/static/js/2.be486d37.chunk.js",
-    "static/js/2.be486d37.chunk.js.map": "/CharityPool/static/js/2.be486d37.chunk.js.map",
+    "static/js/2.82940691.chunk.js": "/CharityPool/static/js/2.82940691.chunk.js",
+    "static/js/2.82940691.chunk.js.map": "/CharityPool/static/js/2.82940691.chunk.js.map",
     "index.html": "/CharityPool/index.html",
     "static/css/2.150d169a.chunk.css.map": "/CharityPool/static/css/2.150d169a.chunk.css.map",
     "static/css/main.d058e95b.chunk.css.map": "/CharityPool/static/css/main.d058e95b.chunk.css.map",
-    "static/js/2.be486d37.chunk.js.LICENSE.txt": "/CharityPool/static/js/2.be486d37.chunk.js.LICENSE.txt",
+    "static/js/2.82940691.chunk.js.LICENSE.txt": "/CharityPool/static/js/2.82940691.chunk.js.LICENSE.txt",
     "static/media/ETH.91dd9993.png": "/CharityPool/static/media/ETH.91dd9993.png",
     "static/media/checkmark.bd5b95a7.png": "/CharityPool/static/media/checkmark.bd5b95a7.png",
     "static/media/donation.92566bb2.png": "/CharityPool/static/media/donation.92566bb2.png",
@@ -22,8 +22,8 @@
   "entrypoints": [
     "static/js/runtime-main.c0cf6c09.js",
     "static/css/2.150d169a.chunk.css",
-    "static/js/2.be486d37.chunk.js",
+    "static/js/2.82940691.chunk.js",
     "static/css/main.d058e95b.chunk.css",
-    "static/js/main.de294b1f.chunk.js"
+    "static/js/main.c80ec925.chunk.js"
   ]
 }
