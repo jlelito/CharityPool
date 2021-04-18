@@ -493,7 +493,7 @@ constructor(state) {
             <li>3. <a href='#charityVote'>Vote on your favorite charity</a> to receive the interest!</li>
           </b>
           
-          <p>You can withdraw ETH that is not delegated at any time!</p>
+          <p className='text-muted font-italic'>You can withdraw ETH that is not delegated at any time!</p>
           {this.state.admin === this.state.account ? 
             <>
               <h2 className='mt-2'>Create Charities</h2>  

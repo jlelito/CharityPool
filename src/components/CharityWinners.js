@@ -17,7 +17,7 @@ render() {
                             <>
                                 {this.props.pastWinners.map(winner => (
                                     <li className='list-group-item' key={winner.id}>
-                                    <p><b>Date: </b>{(new Date(parseInt(winner.returnValues.timestamp) * 1000)).toLocaleString()}</p>
+                                    <p><b>Date (EST): </b>{(new Date(parseInt(winner.returnValues.timestamp) * 1000)).toLocaleString()}</p>
                                     <p><b>Charity: </b> {winner.returnValues.name}</p>
                                     <p className='row'><b className='mr-1'>Donation Amount: </b> {this.props.web3.utils.fromWei(winner.returnValues.prize, 'Ether')} ETH <img src={ethlogo} width='25' height='25' alt='ethlogo'/> </p>
                                     <p className='text-muted'>Donation $ Amount:  
